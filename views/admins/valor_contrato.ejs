@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Centro de Valorización</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+
+    <style>
+        :root { --font-main: 'Inter', sans-serif; --bg-body: #f3f5f9; --primary: #0d6efd; --text-dark: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; --sidebar-width: 380px; }
+        body { background-color: var(--bg-body); font-family: var(--font-main); color: var(--text-dark); height: 100vh; overflow: hidden; }
+        
+        /* Layout */
+        .app-layout { display: flex; height: 100vh; width: 100%; }
+        .sidebar-pane { width: var(--sidebar-width); background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 2; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .contract-list { flex-grow: 1; overflow-y: auto; padding: 1rem; }
+        .main-pane { flex-grow: 1; background-color: #f8f9fa; overflow-y: auto; position: relative; display: flex; flex-direction: column; }
+        .top-bar { background: white; padding: 0.75rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .content-area { padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; padding-bottom: 6rem; }
+        
+        /* Estilos Item Lista */
+        .contract-item { padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; background: white; }
+        .contract-item:hover { background-color: #f8fafc; border-color: #e2e8f0; }
+        .contract-item.active { background-color: #eff6ff; border-color: #bfdbfe; box-shadow: 0 2px 4px rgba(13, 110, 253, 0.05); }
+        .c-name { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); display: block; margin-bottom: 2px; }
+        .c-price { font-weight: 700; color: #059669; font-size: 0.85rem; margin-left: auto; }
+
+        /* Inputs y Tablas */
+        .input-group-price { max-width: 180px; }
+        .form-control-price { border-color: #cbd5e1; font-weight: 600; text-align: right; }
+        .table-pricing th { background: #f8fafc; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; padding: 0.75rem 1.25rem; }
+        
+        /* Barra Flotante */
+        .save-bar {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%);
+            background: #1e293b; color: white; padding: 0.8rem 1.5rem; border-radius: 50px;
+            display: flex; align-items: center; gap: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1050; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .save-bar.visible { transform: translateX(-50%) translateY(0); }
+        
+        /* Empty State */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #94a3b8; }
+        .empty-icon { font-size: 4rem; opacity: 0.4; margin-bottom: 1rem; }
+        
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .kpi-card { background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+        .kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
+    </style>
+</head>
+<body>
+    <div id="screen-loader" class="d-none" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div class="app-layout">
+        <aside class="sidebar-pane">
+            <div class="sidebar-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0">Valorización</h5>
+                    <span class="badge bg-light text-dark border" id="count-contracts">0</span>
+                </div>
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" id="search-input" class="form-control ps-5 bg-light border-0" placeholder="Buscar contrato...">
+                </div>
+            </div>
+            <div id="contracts-list" class="contract-list"></div>
+        </aside>
+
+        <main class="main-pane">
+            <div class="top-bar">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active px-4" id="btn-view-valorizar"><i class="bi bi-pencil-square me-2"></i>Valorizar</button>
+                    <button type="button" class="btn btn-outline-secondary px-4" id="btn-view-analisis"><i class="bi bi-graph-up me-2"></i>Análisis</button>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small fw-bold">Moneda Base:</span>
+                    <select id="currency-base" class="form-select form-select-sm border-0 bg-light fw-bold" style="width: 80px;">
+                        <option value="USD">USD</option>
+                        <option value="PEN">PEN</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="view-valorizacion" class="content-area">
+                <div id="placeholder-section" class="empty-state">
+                    <i class="bi bi-calculator empty-icon"></i>
+                    <h3 class="fw-bold text-dark">Comienza a Valorizar</h3>
+                    <p>Selecciona un contrato de la izquierda.</p>
+                </div>
+
+                <div id="details-section" class="d-none">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle" id="contract-currency">USD</span>
+                            <small class="text-muted text-uppercase fw-bold" id="contract-client">CLIENTE</small>
+                        </div>
+                        <h2 class="fw-bold m-0" id="contract-title">Nombre Contrato</h2>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+                        <div class="card-header bg-white py-3 border-bottom"><h6 class="m-0 fw-bold text-muted text-uppercase">Equipos y Hardware</h6></div>
+                        <div id="equipos-container" class="card-body p-0"></div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-5 overflow-hidden">
+                        <div class="card-header bg-white py-3 border-bottom"><h6 class="m-0 fw-bold text-muted text-uppercase">Servicios</h6></div>
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-muted small" id="servicios-nombres"></div>
+                            <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded border">
+                                <label class="fw-bold mb-0">Valor Total Servicios</label>
+                                <div class="input-group" style="width: 200px;">
+                                    <span class="input-group-text bg-white" id="currency-symbol-serv">$</span>
+                                    <input type="number" step="0.01" class="form-control form-control-price fw-bold text-end" id="valor_total_servicios" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mb-5">
+                        <div class="text-muted small">Total Contrato</div>
+                        <div class="fs-2 fw-bold text-success" id="contract-total-display">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-analisis" class="d-none content-area">
+                <h4 class="fw-bold mb-4">Panorama Financiero</h4>
+                <div class="kpi-grid">
+                    <div class="kpi-card"><small class="text-muted fw-bold">TOTAL</small><div class="kpi-value text-primary" id="kpi-total">—</div></div>
+                    <div class="kpi-card"><small class="text-muted fw-bold">PROMEDIO</small><div class="kpi-value" id="kpi-promedio">—</div></div>
+                    <div class="kpi-card"><small class="text-muted fw-bold">CLIENTES</small><div class="kpi-value" id="kpi-clientes">—</div></div>
+                    <div class="kpi-card"><small class="text-muted fw-bold">TOP</small><div class="fs-6 fw-bold text-truncate mt-1" id="kpi-top">—</div></div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm h-100"><div class="card-body" style="height: 300px;"><canvas id="chart-top-contratos"></canvas></div></div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100"><div class="card-body" style="height: 300px;"><canvas id="chart-serv-eqp"></canvas></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="save-bar" class="save-bar">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-info-circle-fill text-warning"></i>
+                <span class="fw-medium">Tienes cambios sin guardar</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light border-secondary text-light" id="btn-cancel">Descartar</button>
+                <button class="btn btn-sm btn-light fw-bold text-dark" id="btn-save">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>window.Busy={el:document.getElementById('screen-loader'),show(){this.el?.classList.remove('d-none')},hide(){this.el?.classList.add('d-none')}};</script>
+    <script src="/js/valor_contrato.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Informes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .filter-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .table-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-responsive {
+            min-height: 400px;
+        }
+        .badge-custom {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+        .btn-sm {
+            font-size: 0.85rem;
+        }
+        .estado-pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .estado-completado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .estado-cancelado {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="bi bi-file-earmark-text"></i> Mis Informes
+            </span>
+            <div class="ms-auto">
+                <span class="text-white me-3">
+                    <i class="bi bi-person-circle"></i> <%= user.nombre %>
+                </span>
+                <a href="/logout-tecnico" class="btn btn-sm btn-light">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="padding: 0 1rem;">
+
+        <!-- HEADER -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1"><i class="bi bi-inbox"></i> Mis Informes de Campo</h2>
+                    <p class="mb-0">Descarga y previsualiza tus informes generados</p>
+                </div>
+                <a href="/menu-central" class="btn btn-light">
+                    <i class="bi bi-arrow-left"></i> Atrás
+                </a>
+            </div>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filter-card">
+            <h5 class="mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Empresa</label>
+                    <select id="filtroEmpresa" class="form-select form-select-sm">
+                        <option value="">-- Todas las empresas --</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">N° Serie</label>
+                    <input type="text" id="filtroSerie" class="form-control form-control-sm" placeholder="Ej: C5D5698">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Ticket</label>
+                    <input type="text" id="filtroTicket" class="form-control form-control-sm" placeholder="Ej: TK001">
+                </div>
+            </div>
+            <div class="row g-3 mt-2">
+                <div class="col-auto">
+                    <button id="btnFiltrar" class="btn btn-primary btn-sm">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button id="btnLimpiar" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA DE INFORMES -->
+        <div class="table-container">
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted mt-2">Cargando informes...</p>
+            </div>
+
+            <div class="table-responsive" id="tablaInformesContainer" style="display: none;">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Empresa</th>
+                            <th>Ticket</th>
+                            <th>N° Serie</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th style="width: 180px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaInformes">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noDataMessage" class="no-data" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <p>No hay informes disponibles con los filtros seleccionados</p>
+            </div>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <nav id="paginacionContainer" class="mt-4" style="display: none;">
+            <ul class="pagination justify-content-center">
+            </ul>
+        </nav>
+
+    </div>
+
+    <!-- MODAL DE VISTA PREVIA -->
+    <div class="modal fade" id="modalPrevia" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Vista Previa - Informe de Campo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalPreviaContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a id="btnDescargarDesdeModal" href="#" class="btn btn-danger" target="_blank">
+                        <i class="bi bi-download"></i> Descargar PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script src="/js/mis-informes.js"></script>
+
+</body>
+</html>

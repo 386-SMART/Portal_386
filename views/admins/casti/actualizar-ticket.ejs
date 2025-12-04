@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Tickets - Cass TI</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd; /* Azul similar al sidebar */
+            --bg-body: #f3f4f6;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --card-radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        /* Estilos de Tarjetas */
+        .card-custom {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .card-header-clean {
+            background-color: transparent;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header-clean h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Inputs y Formularios */
+        .form-label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.9rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        /* Tablas */
+        .table-custom th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .table-custom td {
+            padding: 1rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Badges */
+        .badge-status {
+            padding: 0.4em 0.8em;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        /* Acordeón Personalizado */
+        .accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px !important;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .accordion-button {
+            background-color: #fff;
+            color: #1f2937;
+            font-weight: 600;
+            box-shadow: none !important;
+        }
+
+        .accordion-button:not(.collapsed) {
+            color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        /* Tabs Modernas */
+        .nav-tabs-modern {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-tabs-modern .nav-link {
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .nav-tabs-modern .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-tabs-modern .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background: transparent;
+        }
+
+        /* Utilitarios */
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid py-4 px-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">Gestión de Tickets</h3>
+            <p class="text-muted mb-0 small">Administra garantías, pedidos y piezas desde un solo lugar.</p>
+        </div>
+        </div>
+
+    <div class="card card-custom mb-4" id="main-list-card">
+        <div class="card-header-clean">
+            <h4><i class="bi bi-table text-primary"></i> Tickets Registrados</h4>
+            <div class="d-flex gap-2">
+                 </div>
+        </div>
+        
+        <div class="card-body p-4">
+            <div class="bg-light p-3 rounded-3 mb-4 border">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small text-uppercase">Empresa</label>
+                        <select id="filtro-empresa" class="form-select bg-white">
+                            <option value="">Todas las empresas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small text-uppercase">N° Serie</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-qr-code"></i></span>
+                            <input type="text" id="filtro-serie" class="form-control" placeholder="Ej: 5C9513...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small text-uppercase">Ticket ID</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-ticket-perforated"></i></span>
+                            <input type="text" id="filtro-ticket" class="form-control" placeholder="Ej: INC-500">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary w-100 btn-icon justify-content-center fw-medium" id="btn-filtrar">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-outline-secondary w-100 btn-icon justify-content-center fw-medium" id="btn-limpiar">
+                                <i class="bi bi-eraser"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th>Código Ticket</th>
+                            <th>N° Serie</th>
+                            <th>Empresa</th>
+                            <th>Fecha Pedido</th>
+                            <th>Estado</th>
+                            <th>Garantía</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-tickets">
+                        <tr><td colspan="7" class="text-center py-5 text-muted"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Cargando tickets...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                <nav id="paginacion-container"></nav>
+            </div>
+        </div>
+    </div>
+
+    <div id="ticket-management-section" class="d-none animate__animated animate__fadeIn">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom mb-3 border-top border-4 border-success">
+                    <div class="card-header-clean bg-white">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3 text-success">
+                                <i class="bi bi-pencil-square fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-dark">Editando Ticket <span id="ticket-code-display" class="text-success">...</span></h5>
+                                <small class="text-muted">Modifique los detalles, gestione piezas y actualice fechas.</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-light border text-muted shadow-sm btn-icon fw-medium" id="btn-cerrar-edicion">
+                            <i class="bi bi-arrow-left"></i> Volver al listado
+                        </button>
+                    </div>
+                </div>
+
+                <div class="accordion" id="managementAccordion">
+                    
+                    <div class="accordion-item shadow-sm border-0 mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo">
+                                <i class="bi bi-info-circle me-2"></i> Información del Ticket
+                            </button>
+                        </h2>
+                        <div id="collapseInfo" class="accordion-collapse collapse show" data-bs-parent="#managementAccordion">
+                            <div class="accordion-body p-4">
+                                <form id="form-info-basica" class="row g-4">
+                                    <div class="col-md-3">
+                                        <label class="form-label">HP Orden Number</label>
+                                        <input type="text" id="hp-orden" class="form-control">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Número de Pedido</label>
+                                        <input type="text" id="numero-pedido" class="form-control">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Tipo de Garantía</label>
+                                        <select id="tipo-garantia" class="form-select">
+                                            <option value="">Seleccione...</option>
+                                            <option value="ESTANDAR">ESTANDAR</option>
+                                            <option value="ADP">ADP</option>
+                                            <option value="HP SC-STANDAR">HP SC-STANDAR</option>
+                                            <option value="HP SC - ADP">HP SC - ADP</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Estado</label>
+                                        <select id="estado-ticket" class="form-select fw-medium">
+                                            <option value="Pedido">Pedido</option>
+                                            <option value="Recibido">Recibido</option>
+                                            <option value="Recibido Parcial">Recibido Parcial</option>
+                                            <option value="Parte equivocada envio equivocado">Parte equivocada / Envío erróneo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Observaciones (máx. 100 caracteres)</label>
+                                        <textarea id="observaciones" class="form-control" rows="3" maxlength="100" placeholder="Ingrese detalles adicionales..."></textarea>
+                                        <small class="text-muted"><span id="contador-observaciones">0</span>/100 caracteres</small>
+                                    </div>
+                                    <div class="col-12 text-end pt-2 border-top">
+                                        <button type="submit" class="btn btn-success px-4 btn-icon fw-medium">
+                                            <i class="bi bi-check-lg"></i> Guardar Información
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item shadow-sm border-0 mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePieces">
+                                <i class="bi bi-tools me-2"></i> Gestión de Piezas
+                            </button>
+                        </h2>
+                        <div id="collapsePieces" class="accordion-collapse collapse" data-bs-parent="#managementAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="card-body">
+                                    <nav>
+                                        <div class="nav nav-tabs nav-tabs-modern px-3" id="nav-tab" role="tablist">
+                                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#nav-nuevas">Piezas Nuevas Recibidas</button>
+                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-dañadas">Piezas Dañadas (Devolución)</button>
+                                        </div>
+                                    </nav>
+                                    
+                                    <div class="tab-content p-4">
+                                        <div class="tab-pane fade show active" id="nav-nuevas">
+                                            <div class="bg-light p-3 rounded-3 border mb-3">
+                                                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-plus-circle"></i> Registrar Nueva Pieza</h6>
+                                                <form class="row g-2 align-items-end" data-tipo-pieza="NUEVA">
+                                                    <div class="col-md-3"><label class="small text-muted mb-1">N° de Parte</label><input type="text" class="form-control form-control-sm" name="part_number" required></div>
+                                                    <div class="col-md-5"><label class="small text-muted mb-1">Descripción</label><input type="text" class="form-control form-control-sm" name="descripcion" required></div>
+                                                    <div class="col-md-3"><label class="small text-muted mb-1">CT</label><input type="text" class="form-control form-control-sm" name="ct"></div>
+                                                    <div class="col-md-1"><button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-plus-lg"></i></button></div>
+                                                </form>
+                                            </div>
+                                            <div class="table-responsive rounded-3 border">
+                                                <table class="table table-sm table-striped mb-0">
+                                                    <thead class="bg-white"><tr><th>N° Parte</th><th>Descripción</th><th>CT</th></tr></thead>
+                                                    <tbody id="tabla-piezas-nuevas"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="tab-pane fade" id="nav-dañadas">
+                                            <div class="bg-warning bg-opacity-10 p-3 rounded-3 border border-warning mb-3">
+                                                <h6 class="text-warning-emphasis fw-bold mb-3"><i class="bi bi-recycle"></i> Registrar Pieza Dañada</h6>
+                                                <form class="row g-2 align-items-end" data-tipo-pieza="DAÑADA">
+                                                    <div class="col-md-3"><label class="small text-muted mb-1">N° de Parte</label><input type="text" class="form-control form-control-sm" name="part_number" required></div>
+                                                    <div class="col-md-5"><label class="small text-muted mb-1">Descripción</label><input type="text" class="form-control form-control-sm" name="descripcion" required></div>
+                                                    <div class="col-md-3"><label class="small text-muted mb-1">CT</label><input type="text" class="form-control form-control-sm" name="ct"></div>
+                                                    <div class="col-md-1"><button type="submit" class="btn btn-warning btn-sm w-100 text-dark"><i class="bi bi-plus-lg"></i></button></div>
+                                                </form>
+                                            </div>
+                                            <div class="table-responsive rounded-3 border">
+                                                <table class="table table-sm table-striped mb-0">
+                                                    <thead class="bg-white"><tr><th>N° Parte</th><th>Descripción</th><th>CT</th></tr></thead>
+                                                    <tbody id="tabla-piezas-dañadas"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item shadow-sm border-0 mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatus">
+                                <i class="bi bi-calendar-event me-2"></i> Logística y Fechas
+                            </button>
+                        </h2>
+                        <div id="collapseStatus" class="accordion-collapse collapse" data-bs-parent="#managementAccordion">
+                            <div class="accordion-body p-4">
+                                <form id="form-update-fechas" class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title text-primary fw-bold mb-3">Ciclo de Pieza</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fecha de Llegada de Pieza</label>
+                                                    <input type="date" id="llegada-pieza" class="form-control">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fecha Devolución (Calculada)</label>
+                                                    <input type="date" id="devolver-pieza" class="form-control bg-white" readonly style="cursor: not-allowed;">
+                                                    <small class="text-muted fst-italic">* Automático basado en llegada</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title text-primary fw-bold mb-3">ERDT & Claims</h6>
+                                                <div class="row g-2 mb-3">
+                                                    <div class="col-4"><label class="form-label small">Fecha ERDT</label><input type="date" id="erdt" class="form-control form-control-sm"></div>
+                                                    <div class="col-8"><label class="form-label small">Ticket ERDT</label><input type="text" id="ticket-erdt" class="form-control form-control-sm"></div>
+                                                </div>
+                                                <div class="row g-2">
+                                                    <div class="col-4"><label class="form-label small">Fecha Claim</label><input type="date" id="claim" class="form-control form-control-sm"></div>
+                                                    <div class="col-8"><label class="form-label small">Ticket Claim</label><input type="text" id="ticket-claim" class="form-control form-control-sm"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 text-end pt-2 border-top">
+                                        <button type="submit" class="btn btn-primary px-4 btn-icon fw-medium">
+                                            <i class="bi bi-save"></i> Actualizar Logística
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border border-danger border-opacity-25 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed text-danger bg-danger bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelete">
+                                <i class="bi bi-trash me-2"></i> Zona de Peligro
+                            </button>
+                        </h2>
+                        <div id="collapseDelete" class="accordion-collapse collapse" data-bs-parent="#managementAccordion">
+                            <div class="accordion-body bg-white">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-muted">
+                                        <p class="mb-1 fw-bold text-danger">Eliminar Ticket</p>
+                                        <p class="mb-0 small">Esta acción es irreversible. Se eliminarán todas las piezas asociadas.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-icon" id="btn-eliminar-ticket">
+                                        <i class="bi bi-trash3-fill"></i> Eliminar Definitivamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Contador de caracteres para Observaciones
+    const obsTextarea = document.getElementById('observaciones');
+    const contadorObs = document.getElementById('contador-observaciones');
+    if (obsTextarea && contadorObs) {
+        obsTextarea.addEventListener('input', () => {
+            contadorObs.textContent = obsTextarea.value.length;
+        });
+    }
+</script>
+<script src="/js/actualizar-ticket.js?v=<%= Date.now() %>"></script>
+</body>
+</html>

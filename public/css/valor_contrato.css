@@ -1,0 +1,72 @@
+/* ============================================== */
+/* === ESTILOS PARA VALORIZACIÓN DE CONTRATOS === */
+/* ============================================== */
+
+:root {
+    --primary-color: #4f46e5;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --page-bg: #f3f4f6;
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+body {
+    background-color: var(--page-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Encabezado */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+.page-header h1 { color: var(--text-dark); }
+
+/* Pestañas */
+.nav-tabs { border-bottom-color: var(--border-color); }
+.nav-tabs .nav-link { font-weight: 500; color: var(--text-muted); border-bottom-width: 2px; }
+.nav-tabs .nav-link.active { color: var(--primary-color); border-color: var(--primary-color) var(--primary-color) var(--card-bg); }
+.tab-content { padding-top: 1.5rem; }
+
+/* Tarjeta de lista de contratos */
+.contract-list-card .card-header { padding: 0.75rem; background-color: #f9fafb; border-bottom: 1px solid var(--border-color); }
+.contract-list-card .form-control { border-radius: 0.5rem; }
+.contract-list-card .list-group { max-height: 70vh; overflow-y: auto; }
+.list-group-item { cursor: pointer; transition: background-color 0.2s ease; }
+.list-group-item:hover { background-color: #f9fafb; }
+.list-group-item.active { background-color: #eef2ff; color: var(--primary-color); border-color: #c7d2fe; }
+
+/* Placeholder */
+.placeholder-wrapper { display: flex; align-items: center; justify-content: center; height: 100%; border: 2px dashed var(--border-color); border-radius: 0.75rem; }
+
+/* Tarjetas y Secciones */
+.card { border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: var(--shadow-sm); }
+.card-header { background-color: #f9fafb; border-bottom: 1px solid var(--border-color); }
+.card-footer { background-color: #f9fafb; border-top: 1px solid var(--border-color); }
+.section-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.75rem; }
+
+/* Acordeón */
+.accordion-button { font-weight: 500; }
+.accordion-button:not(.collapsed) { background-color: #eef2ff; color: var(--primary-color); box-shadow: none; }
+
+/* Totales */
+.total-summary-box { display: flex; justify-content: flex-end; align-items: center; background-color: #f9fafb; padding: 0.5rem 1rem; border-radius: 0.5rem; }
+
+/* KPIs rediseñados */
+.kpi-card-improved { padding: 1rem; background-color: var(--card-bg); border-radius: 0.75rem; }
+.kpi-card-improved .kpi-label { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.25rem; }
+.kpi-card-improved .kpi-value { font-size: 1.75rem; font-weight: 700; color: var(--text-dark); line-height: 1.2; }
+
+/* Gráficos */
+.chart-card { height: 100%; }
+.card-title-chart { font-weight: 600; margin-bottom: 1rem; }
+.chart-card canvas { max-height: 280px; }
+
+/* Loader */
+#screen-loader { position: fixed; inset: 0; background: rgba(15,23,42,.35); display: flex; align-items: center; justify-content: center; z-index: 1061; }
+#screen-loader .box { background: rgba(255,255,255,.95); color: #0f172a; border-radius: 12px; padding: 18px 22px; min-width: 220px; text-align: center; }

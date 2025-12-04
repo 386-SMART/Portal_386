@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Servicios</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon">
+
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+  <style>
+    :root {
+      --font-main: 'Inter', sans-serif;
+      --bg-body: #f3f5f9;
+      --primary: #0d6efd;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-body);
+      color: var(--text-dark);
+    }
+
+    /* Layout */
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .page-header h1 { font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.25rem; font-size: 1.75rem; }
+
+    /* Tabs Navigation */
+    .nav-pills-custom {
+      background: white;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      display: inline-flex;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+    }
+    .nav-pills-custom .nav-link {
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 0.6rem 1.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s;
+    }
+    .nav-pills-custom .nav-link.active {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+    }
+    .nav-pills-custom .nav-link:hover:not(.active) {
+      background-color: #f8fafc;
+      color: var(--primary);
+    }
+
+    /* Cards */
+    .content-card {
+      background: white;
+      border-radius: 1rem;
+      border: 1px solid var(--border-color);
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+      height: 100%;
+    }
+
+    /* Workflow Steps (Gestión) */
+    .workflow-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      height: 100%;
+    }
+    .workflow-card-title { font-weight: 600; margin-bottom: 1.5rem; color: var(--text-dark); }
+
+    /* Service List (Catalog) */
+    .catalogo-container {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .service-check-card {
+      display: block;
+      position: relative;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .service-check-card:hover { border-color: var(--primary); }
+    .service-check-card input:checked + label { color: var(--primary); font-weight: 600; }
+    .service-check-card input:checked ~ .check-icon { opacity: 1; transform: scale(1); }
+    
+    /* Alerts Cards */
+    .alert-card {
+      background: white;
+      border-left: 4px solid #ccc;
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      position: relative;
+    }
+    .alert-card.info { border-left-color: #0dcaf0; }
+    .alert-card.warning { border-left-color: #ffc107; }
+    .alert-card.danger { border-left-color: #dc3545; }
+    
+    .alert-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+    .alert-card-title { font-weight: 600; font-size: 1rem; }
+    .alert-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+    
+    /* Sidebar Help */
+    .sidebar-help {
+      position: sticky;
+      top: 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border-color);
+    }
+    .help-item { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
+    .help-icon { 
+      width: 32px; height: 32px; background: #eef2ff; color: var(--primary); 
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+    }
+
+    /* Buttons */
+    .btn-primary {
+      padding: 0.6rem 1.2rem; font-weight: 500; border-radius: 0.5rem;
+      box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2); border: none;
+    }
+    .btn-primary:hover { background-color: #0b5ed7; }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+    
+    <header class="page-header">
+      <div>
+        <h1>Gestión de Servicios</h1>
+        <p class="text-muted mb-0">Administra contratos y configura alertas de marketing.</p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoServicio">
+          <i class="bi bi-plus-lg me-2"></i>Nuevo Servicio
+        </button>
+      </div>
+    </header>
+
+    <div class="row g-4">
+        <div class="col-lg-9">
+            
+            <ul class="nav nav-pills nav-pills-custom" id="mainTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="marketing-tab" data-bs-toggle="pill" data-bs-target="#marketing-tab-pane" type="button">
+                        <i class="bi bi-megaphone me-2"></i>Marketing & Alertas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gestion-tab" data-bs-toggle="pill" data-bs-target="#gestion-tab-pane" type="button">
+                        <i class="bi bi-file-earmark-text me-2"></i>Asignación a Contratos
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                
+                <div class="tab-pane fade show active" id="marketing-tab-pane">
+                    <div class="content-card mb-4">
+                        <h5 class="fw-bold mb-4">Crear / Publicar Alerta</h5>
+                        <form id="form-alerta" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Categoría de Servicio</label>
+                                    <select id="al-categoria" class="form-select" required></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Severidad</label>
+                                    <select id="al-severity" class="form-select" required>
+                                        <option value="info">Baja (Azul)</option>
+                                        <option value="warning">Media (Amarillo)</option>
+                                        <option value="danger">Alta (Rojo)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Título</label>
+                                    <input id="al-title" class="form-control" placeholder="Ej: Protege tu infraestructura" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Mensaje</label>
+                                    <textarea id="al-message" rows="2" class="form-control" placeholder="Descripción breve..." required></textarea>
+                                </div>
+                                
+                                <div class="col-12 d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEmpresas">
+                                        <i class="bi bi-building me-1"></i> Elegir Empresas (<span id="al-selected-count">0</span>)
+                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button type="reset" class="btn btn-light text-muted">Limpiar</button>
+                                        <button type="button" id="al-publicar" class="btn btn-primary">Publicar Alerta</button>
+                                    </div>
+                                </div>
+                                <div id="al-alert" class="mt-3 w-100"></div>
+                            </div>
+                            
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <input id="al-cta-label" class="form-control form-control-sm" placeholder="Texto Botón (CTA)" />
+                                </div>
+                                <div class="col-md-6">
+                                     <div class="input-group input-group-sm">
+                                        <input type="text" id="al-cta-url" class="form-control" placeholder="URL Botón (https://...)">
+                                        <button class="btn btn-outline-success" type="button" id="al-gen-wa" title="WhatsApp Link"><i class="bi bi-whatsapp"></i></button>
+                                     </div>
+                                </div>
+                                <div class="col-md-6 d-none"><input type="datetime-local" id="al-start" /></div>
+                                <div class="col-md-6 d-none"><input type="datetime-local" id="al-end" /></div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <h6 class="fw-bold text-muted mb-3 ps-1">Alertas Activas</h6>
+                    <div id="al-list" class="alert-list-container">
+                        </div>
+                </div>
+
+                <div class="tab-pane fade" id="gestion-tab-pane">
+                    <div class="row g-4">
+                        <div class="col-lg-5">
+                            <div class="workflow-card">
+                                <h5 class="workflow-card-title">1. Seleccionar Contexto</h5>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Empresa</label>
+                                    <select id="selectEmpresa" placeholder="Buscar empresa..." required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Contrato</label>
+                                    <select id="selectContrato" placeholder="Selecciona contrato..." required disabled></select>
+                                </div>
+                                <div id="resumenSeleccion" class="alert alert-info d-none border-0 bg-opacity-10 bg-info">
+                                    <small class="d-block"><strong>Empresa:</strong> <span id="res-empresa"></span></small>
+                                    <small class="d-block"><strong>Contrato:</strong> <span id="res-contrato"></span></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <div class="content-card h-100">
+                                <h5 class="fw-bold mb-3">2. Asignar Servicios</h5>
+                                <p id="info-no-contrato" class="text-center text-muted py-5">
+                                    <i class="bi bi-arrow-left-circle display-4 opacity-25 mb-2 d-block"></i>
+                                    Selecciona un contrato a la izquierda para gestionar sus servicios.
+                                </p>
+
+                                <form id="form-servicios-contrato" class="d-none">
+                                    <div class="mb-4">
+                                        <div id="catalogo-servicios-container" class="catalogo-container">
+                                            <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+                                        </div>
+                                    </div>
+                                    <div id="alert-contrato" class="mb-2"></div>
+                                    <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <aside class="sidebar-help">
+                <div id="sidebar-marketing">
+                    <h6 class="fw-bold mb-4">Guía de Marketing</h6>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-1-circle"></i></div>
+                        <div><strong class="d-block text-dark">Define</strong><small class="text-muted">Crea el mensaje y la severidad.</small></div>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-2-circle"></i></div>
+                        <div><strong class="d-block text-dark">Segmenta</strong><small class="text-muted">Elige las empresas objetivo.</small></div>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-3-circle"></i></div>
+                        <div><strong class="d-block text-dark">Publica</strong><small class="text-muted">Activa la alerta en el dashboard.</small></div>
+                    </div>
+                </div>
+                
+                <div id="sidebar-gestion" class="d-none">
+                    <h6 class="fw-bold mb-4">Flujo de Asignación</h6>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-building"></i></div>
+                        <div><strong class="d-block text-dark">Empresa</strong><small class="text-muted">Filtra por cliente.</small></div>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-file-text"></i></div>
+                        <div><strong class="d-block text-dark">Contrato</strong><small class="text-muted">Elige el acuerdo vigente.</small></div>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="bi bi-check2-square"></i></div>
+                        <div><strong class="d-block text-dark">Servicios</strong><small class="text-muted">Marca los servicios activos.</small></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalNuevoServicio" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Nuevo Servicio</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="form-nuevo-servicio">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Nombre</label>
+              <input type="text" id="nuevoServicioNombre" class="form-control" placeholder="Ej: Soporte Premium" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Categoría</label>
+              <select id="nuevoServicioCategoria" placeholder="Selecciona o escribe..." required></select>
+            </div>
+            <div id="alert-servicio"></div>
+          </form>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" form="form-nuevo-servicio" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEmpresas" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Empresas Objetivo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="d-flex gap-2 mb-3">
+            <input id="al-search" class="form-control" placeholder="Filtrar lista..."/>
+            <button class="btn btn-white border" id="al-select-all">Todos</button>
+            <button class="btn btn-white border" id="al-clear-all">Ninguno</button>
+          </div>
+          <div id="al-companies-box" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); max-height: 400px; overflow-y: auto;">
+     </div>
+        </div>
+        <div class="modal-footer">
+          <span class="me-auto text-muted small" id="al-modal-meta">0 seleccionadas</span>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalWhatsapp" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">Crear Enlace WhatsApp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Celular (con código país)</label>
+              <input type="text" id="wa-number" class="form-control" placeholder="Ej: 51999888777">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Mensaje Inicial</label>
+              <textarea id="wa-message" rows="3" class="form-control">Hola, me interesa más información sobre...</textarea>
+            </div>
+            <button type="button" id="wa-generate-btn" class="btn btn-success w-100">
+                <i class="bi bi-whatsapp me-2"></i> Generar e Insertar
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/servicios.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const marketingTab = document.getElementById('marketing-tab');
+      const gestionTab = document.getElementById('gestion-tab');
+      const sidebarMarketing = document.getElementById('sidebar-marketing');
+      const sidebarGestion = document.getElementById('sidebar-gestion');
+
+      marketingTab.addEventListener('shown.bs.tab', () => {
+        sidebarMarketing.classList.remove('d-none');
+        sidebarGestion.classList.add('d-none');
+      });
+      gestionTab.addEventListener('shown.bs.tab', () => {
+        sidebarMarketing.classList.add('d-none');
+        sidebarGestion.classList.remove('d-none');
+      });
+    });
+  </script>
+
+<div id="toast-area" class="toast-container position-fixed top-0 end-0 p-1" style="z-index: 1500;"></div>
+</body>
+</html>

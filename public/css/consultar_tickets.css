@@ -1,0 +1,124 @@
+/*
+ * Hoja de Estilos para la página de Consulta de Tickets
+ * Diseño basado en el patrón 'content-card'.
+ */
+
+/* --- 1. ESTILOS BASE Y FUENTE --- */
+/* Aseguramos que la fuente 'Inter' se aplique sobre la de la plantilla */
+body, #main {
+    font-family: 'Inter', sans-serif !important;
+    background-color: #f8f9fc !important; /* Fondo gris claro general */
+}
+
+/* --- 2. TARJETA DE CONTENIDO PRINCIPAL --- */
+/* Este es el estilo clave de tu diseño */
+.content-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem; /* 14px */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+}
+.content-card .card-body {
+    padding: 2.5rem;
+}
+
+/* --- 3. SECCIÓN DE FILTROS --- */
+.filter-container {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1.5rem;
+}
+.filter-container .form-label {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.9rem;
+}
+.filter-container .form-select {
+    font-size: 0.95rem;
+    border-radius: 0.5rem;
+}
+.filter-container .btn {
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+}
+
+/* --- 4. DISEÑO DE LA TABLA PROFESIONAL --- */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.table thead th {
+    background-color: #f8f9fc;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+}
+.table tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+.table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+.table td {
+    vertical-align: middle;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+}
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table td strong {
+    font-weight: 600;
+    color: #334155;
+}
+
+/* --- 5. PAGINACIÓN MODERNA --- */
+.pagination .page-link {
+    border-radius: 0.5rem;
+    margin: 0 0.25rem;
+    border: none;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s ease;
+}
+.pagination .page-link:hover {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    color: white;
+    box-shadow: 0 4px 8px -2px rgba(13, 110, 253, 0.5);
+}
+
+/* --- 6. ESTILO DEL MODAL COHERENTE --- */
+.modal-content {
+    border-radius: 0.875rem;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #f8f9fc;
+}
+#ticketDetailBody .list-group-item {
+    border: none; padding: 1rem 1.5rem;
+}
+#ticketDetailBody .list-group-item:not(:last-child){
+     border-bottom: 1px solid #e2e8f0;
+}
+#ticketDetailBody .list-group-item strong {
+    color: #334155; display: inline-block; min-width: 150px; font-weight: 600;
+}
+
+/* Anulamos cualquier borde sobrante de la plantilla genérica */
+.card, .card-body {
+    border: none !important;
+}

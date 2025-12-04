@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Pedido de Piezas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fc; }
+        .content-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.875rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .progress-container { list-style: none; padding: 0; display: flex; justify-content: space-between; position: relative; }
+        .progress-step { flex: 1; text-align: center; position: relative; }
+        .progress-step .step-circle { width: 30px; height: 30px; border-radius: 50%; background-color: #e2e8f0; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; border: 3px solid #e2e8f0; transition: all 0.3s ease; }
+        .progress-step .step-label { font-size: 0.85rem; font-weight: 500; color: #94a3b8; margin-top: 0.5rem; }
+        .progress-step.active .step-circle { background-color: white; border-color: #0d6efd; color: #0d6efd; }
+        .progress-step.active .step-label { color: #212529; font-weight: 600; }
+        .progress-bar-line { position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e2e8f0; width: 100%; z-index: -1; }
+        .progress-bar-line-active { position: absolute; top: 15px; left: 0; height: 3px; background-color: #0d6efd; width: 0%; z-index: -1; transition: width 0.4s ease; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5" style="max-width: 900px;">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Nuevo Pedido de Piezas</h2>
+        <p class="text-muted">Sigue los pasos para registrar un nuevo ticket de servicio.</p>
+    </div>
+
+    <div class="content-card">
+        <div class="card-body p-4 p-lg-5">
+            
+            <div class="mb-5">
+                <ul class="progress-container">
+                    <li class="progress-step active" data-step="1"><div class="step-circle">1</div><div class="step-label">Equipo</div></li>
+                    <li class="progress-step" data-step="2"><div class="step-circle">2</div><div class="step-label">Pedido</div></li>
+                    <li class="progress-step" data-step="3"><div class="step-circle">3</div><div class="step-label">Piezas</div></li>
+                    <li class="progress-step" data-step="4"><div class="step-circle">4</div><div class="step-label">Fechas</div></li>
+                    <li class="progress-step" data-step="5"><div class="step-circle">5</div><div class="step-label">Finalizar</div></li>
+                </ul>
+                <div class="progress-bar-line"></div>
+                <div class="progress-bar-line-active" id="progress-line"></div>
+            </div>
+
+            <form id="form-registro-piezas">
+                <div class="form-step active" data-step="1">
+                    <h5 class="fw-bold mb-3">1. Asociación y Equipo</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label for="id_empresa" class="form-label fw-semibold">Empresa <span class="text-danger">*</span></label><select id="id_empresa" name="id_empresa" class="form-select" required><option value="">Seleccione...</option><% empresas.forEach(empresa => { %><option value="<%= empresa.id_empresa %>"><%= empresa.nombre %></option><% }) %></select></div>
+                        <div class="col-md-6"><label for="Numero_serie" class="form-label fw-semibold">Número de Serie <span class="text-danger">*</span></label><input type="text" class="form-control" id="Numero_serie" name="Numero_serie" required disabled placeholder="Seleccione empresa"></div>
+                        <div class="col-md-6"><label for="Modelo_equipo" class="form-label fw-semibold">Modelo</label><input type="text" class="form-control bg-light" id="Modelo_equipo" name="Modelo_equipo" readonly></div>
+                        <div class="col-md-6"><label for="Ubicacion" class="form-label fw-semibold">Ubicación / Sede</label><input type="text" class="form-control" id="Ubicacion" name="Ubicacion"></div>
+                    </div>
+                </div>
+
+                <div class="form-step" data-step="2" style="display: none;">
+                    <h5 class="fw-bold mb-3">2. Información del Pedido</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label fw-semibold">Código Aranda</label><input type="text" name="Codigo_Aranda" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">HP Orden Number</label><input type="text" name="Hp_Orden_Number" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Número de Pedido</label><input type="text" name="Numero_Pedido" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Tipo de Garantía</label><select name="Tipo_garantia" class="form-select"><option>ESTANDAR</option><option>ADP</option><option>HP SC - STANDAR</option><option>HP SC - ADP</option></select></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Fecha Pedido</label><input type="date" name="Fecha_Pedido" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Estado del Pedido</label><select name="Estado" class="form-select"><option>Desplegar</option><option>Pedido</option><option>Recibido</option><option>Recibido Parcial</option><option>Parte equivocada</option><option>Envío equivocado</option></select></div>
+                    </div>
+                </div>
+
+                <div class="form-step" data-step="3" style="display: none;">
+                    <h5 class="fw-bold mb-3">3. Piezas Requeridas</h5>
+                    <div class="row">
+                        <% catalogoPiezas.forEach(pieza => { %>
+                            <div class="col-lg-3 col-md-4 col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="standardParts" value="<%= pieza.id_pieza %>" id="pieza-<%= pieza.id_pieza %>"><label class="form-check-label" for="pieza-<%= pieza.id_pieza %>"><%= pieza.nombre_pieza %></label></div></div>
+                        <% }) %>
+                    </div>
+                    <div class="mt-3"><label for="otherPart" class="form-label fw-semibold">Otra Pieza (si no está en lista)</label><input type="text" id="otherPart" name="otherPart" class="form-control"></div>
+                </div>
+
+                <div class="form-step" data-step="4" style="display: none;">
+                    <h5 class="fw-bold mb-3">4. Fechas Adicionales</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="form-label fw-semibold">Llegada de Pieza</label><input type="date" name="LLegada_de_pieza" id="llegada-pieza" class="form-control"></div>
+                        <div class="col-md-3"><label class="form-label fw-semibold">Devolver Pieza (SLA)</label><input type="date" name="Devolver_pieza" id="devolver-pieza" class="form-control bg-light" readonly></div>
+                        <div class="col-md-2"><label class="form-label fw-semibold">Claim</label><input type="date" name="Claim" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Ticket Claim</label><input type="text" name="Ticket_Claim" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">ERDT</label><input type="date" name="ERDT" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label fw-semibold">Ticket ERDT</label><input type="text" name="Ticket_ERDT" class="form-control"></div>
+                    </div>
+                </div>
+                
+                <div class="form-step" data-step="5" style="display: none;">
+                    <h5 class="fw-bold mb-3">5. Observaciones (máx. 100 caracteres)</h5>
+                    <textarea name="Observaciones" class="form-control" rows="3" maxlength="100" placeholder="Añada cualquier nota o detalle adicional aquí..."></textarea>
+                    <small class="text-muted"><span id="contador-obs-registro">0</span>/100 caracteres</small>
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-secondary" id="btn-prev" style="display: none;">Anterior</button>
+                    <button type="button" class="btn btn-primary" id="btn-next">Siguiente</button>
+                    <button type="submit" class="btn btn-success btn-lg" id="btn-submit" style="display: none;">
+                        <i class="bi bi-check-circle me-2"></i>Registrar Ticket
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Contador de caracteres para Observaciones en registro
+    const obsRegistro = document.querySelector('textarea[name="Observaciones"]');
+    const contadorObsRegistro = document.getElementById('contador-obs-registro');
+    if (obsRegistro && contadorObsRegistro) {
+        obsRegistro.addEventListener('input', () => {
+            contadorObsRegistro.textContent = obsRegistro.value.length;
+        });
+    }
+</script>
+<script src="/js/registro-piezas.js"></script>
+</body>
+</html>

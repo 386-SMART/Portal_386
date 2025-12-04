@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Contratos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --bg-body: #f3f5f9;
+            --primary: #0d6efd;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: var(--font-main);
+            color: #344767;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #1e293b;
+        }
+
+        /* Card Container */
+        .content-card {
+            background-color: white;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            overflow: hidden;
+        }
+
+        /* Search Input & Select */
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper .bi-search {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .form-control-search,
+        .form-select-custom {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            font-size: 0.95rem;
+            padding-left: 40px;
+            /* Espacio para el icono */
+        }
+
+        .form-select-custom {
+            padding-left: 1rem;
+        }
+
+        /* Select no lleva icono a la izquierda */
+
+        .form-control-search:focus,
+        .form-select-custom:focus {
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+            border-color: var(--primary);
+        }
+
+        /* Modern Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-custom thead th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-custom tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #fcfcfc;
+        }
+
+        .table-custom td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .table-custom tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Estilos Específicos */
+        .contract-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .company-name {
+            color: #64748b;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .date-wrapper {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+
+        .date-text {
+            font-family: 'Inter', monospace;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .date-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        /* Badges de Estado */
+        .badge-status {
+            padding: 0.35em 0.8em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-vigente {
+            background-color: #d1fae5;
+            color: #047857;
+        }
+
+        /* Verde */
+        .status-vencido {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Rojo */
+        .status-proximo {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+
+        /* Amarillo/Naranja */
+
+        /* Action Buttons */
+        .btn-action {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: all 0.2s;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            background-color: #eff6ff;
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        #table-container.loading {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-4 p-md-5">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+            <div>
+                <h1 class="h3 mb-1">Gestión de Contratos</h1>
+                <p class="text-muted mb-0">Administra los acuerdos comerciales y verifica su vigencia.</p>
+            </div>
+            <div>
+                <a href="/admin/administracioncon"
+                    class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 shadow-sm"
+                    style="border-radius: 0.5rem;">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Agregar & Modificar</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="p-4 border-bottom border-light">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <div class="search-wrapper">
+                            <i class="bi bi-search"></i>
+                            <input type="search" id="search-input" class="form-control form-control-search"
+                                placeholder="Buscar por nombre de contrato, código o empresa...">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <select id="company-filter" class="form-select form-select-custom">
+                            <option value="">Todas las empresas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="table-container">
+            </div>
+
+            <div class="p-3 border-top border-light bg-light bg-opacity-25">
+                <nav class="d-flex justify-content-end">
+                    <ul id="pagination" class="pagination pagination-sm mb-0"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/visualizarcontratos.js"></script>
+</body>
+
+</html>

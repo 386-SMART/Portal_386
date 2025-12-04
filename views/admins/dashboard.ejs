@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard Administrador</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon">
+
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --bg-body: #f3f5f9;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            --card-radius: 1rem;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: var(--font-main);
+            color: #344767;
+        }
+
+        /* --- Header Styling --- */
+        .page-header h1 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #1e293b;
+        }
+
+        /* --- KPI Cards (Gradientes Modernos) --- */
+        .kpi-card {
+            border: none;
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Variaciones de Color */
+        .kpi-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .kpi-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .kpi-emerald {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .kpi-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .kpi-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 6rem;
+            opacity: 0.15;
+            transform: rotate(-15deg);
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover .kpi-icon-bg {
+            transform: rotate(0deg) scale(1.1);
+        }
+
+        /* --- Content Cards --- */
+        .content-card {
+            background-color: white;
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header-custom {
+            padding: 1.25rem 1.5rem;
+            background: transparent;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #334155;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            padding: 10px;
+        }
+
+        /* --- Table Styling --- */
+        .table-custom thead th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            font-weight: 700;
+            border-bottom: 2px solid #f1f5f9;
+            background-color: #fff;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .table-custom tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .table-custom tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tbody tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Badges refinados */
+        .badge-status {
+            padding: 0.4em 0.8em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div class="page-header">
+                <h6 class="text-muted text-uppercase mb-1"
+                    style="font-size: 0.85rem; letter-spacing: 1px; font-weight: 600;">Vista General</h6>
+                <h1 class="mb-0">Dashboard de Administrador</h1>
+            </div>
+            <div class="d-none d-md-block">
+                <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill fw-normal shadow-sm">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    <%= new Date().toLocaleDateString('es-PE', { weekday: 'long' , year: 'numeric' , month: 'long' ,
+                        day: 'numeric' }) %>
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <a href="/admin/visualizar_empresas" class="kpi-card kpi-blue">
+                    <div class="kpi-content">
+                        <div class="kpi-value">
+                            <%= totalEmpresas %>
+                        </div>
+                        <div class="kpi-label">Empresas Activas</div>
+                    </div>
+                    <i class="bi bi-buildings-fill kpi-icon-bg"></i>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="/admin/registroclie" class="kpi-card kpi-purple">
+                    <div class="kpi-content">
+                        <div class="kpi-value">
+                            <%= totalUsuarios %>
+                        </div>
+                        <div class="kpi-label">Usuarios del Sistema</div>
+                    </div>
+                    <i class="bi bi-people-fill kpi-icon-bg"></i>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="/admin/visualizarcontratos" class="kpi-card kpi-emerald">
+                    <div class="kpi-content">
+                        <div class="kpi-value">
+                            <%= totalContratos %>
+                        </div>
+                        <div class="kpi-label">Contratos Totales</div>
+                    </div>
+                    <i class="bi bi-file-earmark-text-fill kpi-icon-bg"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-lg-7">
+                <div class="content-card">
+                    <div class="card-header-custom">
+                        <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle"
+                            style="width: 32px; height: 32px;">
+                            <i class="bi bi-pie-chart-fill"></i>
+                        </div>
+                        Distribución por Categoría
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chart-categorias"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="content-card">
+                    <div class="card-header-custom">
+                        <div class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle"
+                            style="width: 32px; height: 32px;">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        Top Modelos de Equipo
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chart-modelos"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="card-header-custom border-0 pb-0">
+                        <div class="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle"
+                            style="width: 32px; height: 32px;">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <span>Próximos Vencimientos <span class="text-muted fw-normal fs-6 ms-1">(Próximos 45
+                                días)</span></span>
+                    </div>
+
+                    <div class="card-body">
+                        <% if (proximosContratos.length===0) { %>
+                            <div class="text-center py-5">
+                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="Todo ok"
+                                    style="width: 64px; opacity: 0.5;" class="mb-3">
+                                <h6 class="text-muted fw-semibold">Todo en orden</h6>
+                                <p class="text-muted small">No hay contratos próximos a vencer.</p>
+                            </div>
+                            <% } else { %>
+                                <div class="table-responsive">
+                                    <table class="table table-custom mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-4">Contrato</th>
+                                                <th>Empresa</th>
+                                                <th class="text-center">Estado</th>
+                                                <th class="text-end pe-4">Fecha Fin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% proximosContratos.forEach(c=> { %>
+                                                <tr>
+                                                    <td class="ps-4">
+                                                        <div class="fw-bold text-dark">
+                                                            <%= c.nombre_contrato %>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                                style="width: 30px; height: 30px; font-size: 0.75rem; font-weight: bold; color: #64748b;">
+                                                                <%= c.empresa.substring(0,2).toUpperCase() %>
+                                                            </div>
+                                                            <%= c.empresa %>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <% let badgeClass='status-success' ; let icon='bi-check-circle'
+                                                            ; if (c.dias_restantes <=7) { badgeClass='status-danger' ;
+                                                            icon='bi-exclamation-circle' ; } else if (c.dias_restantes
+                                                            <=30) { badgeClass='status-warning' ; icon='bi-clock' ; } %>
+                                                            <span class="badge-status <%= badgeClass %>">
+                                                                <i class="bi <%= icon %> me-1"></i>
+                                                                <%= c.dias_restantes %> días
+                                                            </span>
+                                                    </td>
+                                                    <td class="text-end pe-4 font-monospace text-muted">
+                                                        <%= new Date(c.fecha_fin).toLocaleDateString('es-PE', {
+                                                            day: '2-digit' , month: 'short' , year: 'numeric' }) %>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+    <script src="/js/dashboard_admin.js"></script>
+</body>
+
+</html>

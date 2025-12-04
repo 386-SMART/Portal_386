@@ -1,0 +1,177 @@
+:root {
+    --brand-primary: #0080ff; /* Azulino */
+    --brand-secondary: #5d5d5d; /* Plomo */
+    --body-bg: #f8f9fa;
+    --content-bg: #ffffff;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --border-color: #e9ecef;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--body-bg);
+    margin: 0;
+}
+
+.page-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    grid-template-areas:
+        "header header"
+        "main   info";
+    min-height: 100vh;
+}
+
+/* --- Cabecera --- */
+.page-header {
+    grid-area: header;
+    background-color: var(--content-bg);
+    padding: 1.25rem 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* --- Sección Principal --- */
+.main-section {
+    grid-area: main;
+    background-color: var(--content-bg);
+    padding: 2.5rem;
+}
+
+/* Navegación de Vistas (Tabs) */
+.view-switcher {
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.view-switcher .btn {
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    margin-bottom: -2px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.view-switcher .btn.active {
+    border-bottom-color: var(--brand-primary);
+    color: var(--brand-primary);
+    background-color: transparent;
+}
+
+/* Tabla y filtros */
+.table-responsive {
+    max-height: 450px;
+    overflow-y: auto;
+    width: 100%;
+}
+.table {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    table-layout: fixed; /* Importante para que el truncamiento funcione */
+    width: 100%;
+}
+
+/* --- Panel de Información --- */
+.info-panel {
+    grid-area: info;
+    background-color: #f4f7fc;
+    border-left: 1px solid var(--border-color);
+    padding: 2.5rem;
+}
+.info-panel h5 { font-weight: 600; }
+.info-panel ul { list-style-type: none; padding: 0; margin-top: 1.5rem; }
+.info-panel li { display: flex; align-items: flex-start; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+.info-panel .info-icon { color: var(--brand-primary); font-size: 1.2rem; margin-right: 1rem; margin-top: 0.1rem; }
+
+/* Estilos generales de formulario */
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.15);
+}
+.btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    font-weight: 600;
+}
+.page-item.active .page-link {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+/* Clase para truncar texto */
+.truncate-link {
+    display: inline-block;
+    max-width: 300px; /* Ajusta este valor según necesites */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom; /* Alinea mejor con el resto del texto */
+}
+
+
+/* ======================================= */
+/* === DISEÑO RESPONSIVO MEJORADO === */
+/* ======================================= */
+@media (max-width: 991px) {
+    .page-container {
+        grid-template-columns: 1fr;
+        grid-template-areas: "header" "main" "info";
+    }
+    .info-panel { border-left: none; border-top: 1px solid var(--border-color); }
+    .page-header, .main-section, .info-panel {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .table-responsive {
+        max-height: none;
+        overflow-y: visible;
+        border: none;
+    }
+    .table, .table thead, .table tbody, .table th, .table td, .table tr {
+        display: block;
+    }
+    .table thead {
+        display: none;
+    }
+    .table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        padding: 0.5rem 0.25rem;
+        border: none;
+        border-bottom: 1px dashed var(--border-color);
+    }
+    .table td:last-child {
+        border-bottom: none;
+    }
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-align: left;
+        padding-right: 1rem;
+        color: var(--text-dark);
+    }
+    .table td a {
+        word-break: break-all;
+    }
+    .truncate-link { /* En móvil, no truncar, permitir que se rompa la línea */
+      max-width: none;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+}

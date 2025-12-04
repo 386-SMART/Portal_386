@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Constancia de Visita Técnica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        textarea, input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="time"], select {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+        html, body {
+            overflow-x: hidden;
+        }
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .container {
+            position: relative;
+        }
+        .form-section { 
+            border: 1px solid #dee2e6; 
+            border-radius: .375rem; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+        .form-section h5 { 
+            border-bottom: 2px solid #0d6efd; 
+            padding-bottom: 0.5rem; 
+            margin-bottom: 1rem; 
+            color: #0d6efd; 
+        }
+        .signature-pad { 
+            border: 1px dashed #adb5bd; 
+            width: 100%; 
+            height: 200px;
+            display: block;
+            touch-action: none;
+        }
+        /* Mejorar tamaño de inputs en mobile */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important; /* Prevenir zoom al hacer focus */
+                padding: 0.75rem;
+            }
+            .signature-pad {
+                height: 150px;
+            }
+            .form-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container my-4" style="padding-bottom: 5rem; overflow-y: auto;">
+        <h2 class="text-center mb-4">CONSTANCIA DE VISITA TÉCNICA</h2>
+        
+        <form id="informe-form">
+            <input type="hidden" id="idEquipoInput" name="id_equipo">
+            <input type="hidden" id="idEmpresaInput" name="id_empresa">
+            <input type="hidden" id="idCastiInput" name="id_casti">
+
+            <!-- Botón Limpiar al inicio, separado del botón Guardar -->
+            <div class="d-grid mb-4">
+                <button type="button" class="btn btn-outline-danger btn-lg" id="btnLimpiarFormulario">
+                    <i class="bi bi-trash"></i> Limpiar Formulario
+                </button>
+            </div>
+
+            <div class="form-section">
+                <h5><i class="bi bi-person-lines-fill"></i> DATOS DEL CLIENTE</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label class="form-label">Cliente</label><input type="text" id="clienteInput" class="form-control" readonly></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Contrato</label><input type="text" id="contratoInput" class="form-control" readonly></div>
+                    <div class="col-md-4 mb-3"><label class="form-label">Usuario</label><input type="text" name="usuario_cliente_manual" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="form-label">Dirección</label><input type="text" name="direccion_manual" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label class="form-label">Sede</label><input type="text" name="sede_manual" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h5><i class="bi bi-laptop"></i> INFORMACIÓN DEL EQUIPO</h5>
+                 <div class="row">
+                    <div class="col-md-6 mb-3"><label class="form-label"><strong>Serie (Buscar aquí)</strong></label><input type="text" id="serieInput" class="form-control fw-bold" placeholder="Ingresa N/S y sal del campo"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Nombre del Equipo</label><input type="text" name="nombre_equipo_manual" class="form-control"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Modelo</label><input type="text" id="modeloInput" class="form-control" readonly></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Product Number</label><input type="text" id="productNumberInput" class="form-control" readonly></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h5><i class="bi bi-tools"></i> DIAGNÓSTICO - REPARACIÓN</h5>
+                
+                <!-- NUEVO: Selector de tipo de informe al inicio -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tipo de Informe</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipo_informe" id="tipoVisitaTecnica" value="Visita Técnica" checked>
+                            <label class="form-check-label" for="tipoVisitaTecnica">
+                                <i class="bi bi-tools"></i> Visita Técnica (con piezas de CasTi)
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipo_informe" id="tipoIncidenciaSinCasti" value="Incidencia">
+                            <label class="form-check-label" for="tipoIncidenciaSinCasti">
+                                <i class="bi bi-exclamation-triangle"></i> Incidencia (sin CasTi)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- Contenedor para Visita Técnica (buscar en CasTi) -->
+                    <div id="contenedorVisitaTecnica" class="col-md-6 mb-3">
+                        <label class="form-label">Ticket (buscar en CasTi)</label>
+                        <div class="input-group">
+                            <input type="text" id="ticketInput" class="form-control" placeholder="Ingrese ticket de CasTi">
+                            <button class="btn btn-outline-primary" type="button" id="btnBuscarTicket">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                        <small class="text-muted">Busca el ticket en la tabla CasTi</small>
+                    </div>
+                    
+                    <!-- Contenedor para Incidencia (ingreso manual) -->
+                    <div id="contenedorIncidencia" class="col-md-6 mb-3" style="display: none;">
+                        <label class="form-label">Ticket (ingreso manual)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">INC-</span>
+                            <input type="text" id="ticketManualInput" class="form-control" placeholder="Ej: 2025-001">
+                        </div>
+                        <small class="text-muted">El prefijo "INC-" se agregará automáticamente</small>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Número de Pedido</label>
+                        <input type="text" id="numeroPedidoInput" name="numero_pedido_manual" class="form-control" placeholder="Opcional">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Fecha de Servicio</label>
+                        <input type="date" id="fechaServicioInput" name="fecha_servicio" class="form-control" required>
+                    </div>
+                </div>
+                <div class="mb-3"><label class="form-label">Incidente Reportado</label><textarea name="incidente_reportado" class="form-control" rows="2"></textarea></div>
+                <div class="mb-3"><label class="form-label">Revisión Inicial</label><textarea name="revision_inicial" class="form-control" rows="3"></textarea></div>
+                <div class="mb-3"><label class="form-label">Acciones Realizadas</label><textarea name="acciones_realizadas" class="form-control" rows="3"></textarea></div>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label class="form-label">Estado del Equipo</label><select name="estado_equipo" class="form-select"><option value="Reparado">Reparado</option><option value="En Monitoreo">En Monitoreo</option><option value="Inoperativo">Inoperativo</option><option value="Pendiente de Piezas">Pendiente de Piezas</option><option value="Otro">Otro</option></select></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Observaciones</label><textarea name="observaciones" class="form-control" rows="1"></textarea></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h5><i class="bi bi-check2-circle"></i> CONFORMIDAD</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label class="form-label">Hora de inicio</label><input type="time" name="hora_inicio" class="form-control" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Hora de finalización</label><input type="time" name="hora_finalizacion" class="form-control" required></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">¿Quién firma la conformidad?</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="firmante_type" id="tipoTi" value="Client_Ti" checked>
+                            <label class="form-check-label" for="tipoTi">Personal de TI</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="firmante_type" id="tipoUsuarioFinal" value="Usuario_final">
+                            <label class="form-check-label" for="tipoUsuarioFinal">Usuario Final</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- COLUMNA IZQUIERDA: FIRMA DEL CLIENTE (DIBUJO) -->
+                    <div class="col-md-6 text-center">
+                        <label class="form-label fw-bold">Firma del Cliente <span class="text-muted">(Opcional)</span></label>
+                        <p class="text-muted small">El cliente puede dibujar aquí su conformidad</p>
+                        <canvas id="firmaUsuarioPad" class="signature-pad border border-2 border-primary rounded"></canvas>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" data-pad="firmaUsuarioPad">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar Firma
+                        </button>
+                        <input type="hidden" name="firma_usuario">
+                        
+                        <div id="ti-container" class="mt-3">
+                            <label class="form-label small">Seleccionar Personal de TI</label>
+                            <select name="firmante_ti_id" class="form-select form-select-sm" disabled>
+                                <option value="">-- Seleccione contacto de TI --</option>
+                            </select>
+                        </div>
+                        
+                        <div id="usuario-final-container" class="mt-3 d-none">
+                            <label class="form-label small">Seleccionar Usuario Final</label>
+                            <select name="firmante_uf_id" class="form-select form-select-sm">
+                                <option value="">-- Seleccione o registre usuario final --</option>
+                            </select>
+                            <button type="button" class="btn btn-link btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#usuarioFinalModal">
+                                <i class="bi bi-plus-circle"></i> Registrar nuevo usuario final
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUMNA DERECHA: FIRMA DEL TÉCNICO (CARGADA) -->
+                    <div class="col-md-6 text-center">
+                        <label class="form-label fw-bold">Firma del Técnico <span class="text-danger">*</span></label>
+                        
+                        <div class="mb-2">
+                            <select name="id_tecnico" class="form-select" required>
+                                <option value="">-- Seleccione su nombre --</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Área para mostrar firma cargada del técnico -->
+                        <div id="firmaCaradadaContainer" class="bg-light rounded border border-2 border-success p-3 mb-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-muted" id="firmaCaradadaMensaje">
+                                <p class="mb-0">Selecciona un técnico para cargar su firma</p>
+                            </div>
+                            <img id="firmaCaradadaImg" src="" alt="Firma técnico" class="img-fluid" style="max-height: 200px; display: none;">
+                        </div>
+                        
+                        <!-- Canvas oculto (para dibujar si es necesario) -->
+                        <div id="canvasTecnicoContainer" class="d-none">
+                            <p class="text-muted small">O dibuja una nueva firma:</p>
+                            <canvas id="firmaTecnicoPad" class="signature-pad border border-2 border-warning rounded"></canvas>
+                            <button type="button" class="btn btn-sm btn-outline-warning mt-2" data-pad="firmaTecnicoPad">
+                                <i class="bi bi-arrow-clockwise"></i> Limpiar Dibujo
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="firma_tecnico">
+                    </div>
+                </div>
+            </div>
+
+<div class="form-section">
+    <h5><i class="bi bi-camera"></i> ADJUNTAR FOTOS</h5>
+    
+    <div class="mb-3">
+        <label class="form-label">1. Foto general del equipo</label>
+        <input type="file" name="foto_general" class="form-control" accept="image/*" capture="environment">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">2. Foto de la prueba UEFI</label>
+        <input type="file" name="foto_uefi" class="form-control" accept="image/*" capture="environment">
+    </div>
+
+    <div class="mb-3" id="divFotoPieza1">
+        <label class="form-label">3. Foto parte reemplazada 1</label>
+        <input type="file" name="foto_pieza1" class="form-control" accept="image/*" capture="environment">
+    </div>
+
+    <div class="mb-3" id="divFotoPieza2">
+        <label class="form-label">4. Foto parte reemplazada 2</label>
+        <input type="file" name="foto_pieza2" class="form-control" accept="image/*" capture="environment">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" id="labelFotoExtra">5. Otra</label>
+        <input type="file" name="foto_extra" class="form-control" accept="image/*" capture="environment">
+    </div>
+</div>
+
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-lg"></i> Guardar Informe
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="usuarioFinalModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Nuevo Usuario Final</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <form id="form-usuario-final">
+                        <div class="mb-3"><label class="form-label">Nombre Completo <span class="text-danger">*</span></label><input type="text" id="usuarioFinalNombre" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Celular</label><input type="tel" id="usuarioFinalCel" class="form-control"></div>
+                        <div class="mb-3"><label class="form-label">Correo</label><input type="email" id="usuarioFinalCorreo" class="form-control"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="form-usuario-final" class="btn btn-primary">Guardar Usuario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="/js/informecampo.js"></script>
+</body>
+</html>

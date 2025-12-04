@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestión de Informes</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon">
+    
+    <meta name="csrf-token" content="<%= csrfToken %>">
+
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --bg-body: #f3f5f9;
+            --primary: #0d6efd;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+        }
+
+        /* Header */
+        .page-header h1 { font-weight: 700; letter-spacing: -0.5px; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        
+        /* Cards */
+        .content-card {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+
+        /* Table */
+        .table-custom th {
+            background-color: #f8fafc; font-size: 0.75rem; text-transform: uppercase;
+            color: var(--text-muted); font-weight: 700; padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px;
+        }
+        .table-custom td {
+            padding: 1rem 1.5rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 0.9rem;
+        }
+        .table-custom tr:hover td { background-color: #fcfcfc; }
+
+        /* Links */
+        .truncate-link {
+            display: block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--primary); text-decoration: none; font-weight: 500;
+        }
+        .truncate-link:hover { text-decoration: underline; }
+
+        /* Actions */
+        .btn-icon {
+            width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+            color: var(--text-muted); transition: all 0.2s; border: 1px solid transparent; background: transparent;
+        }
+        .btn-icon:hover { background-color: #f1f5f9; color: var(--text-dark); border-color: var(--border-color); }
+        .btn-icon.delete:hover { background-color: #fee2e2; color: #dc2626; border-color: #fecaca; }
+
+        /* Sidebar Info */
+        .info-card {
+            background: white; border-radius: 1rem; padding: 1.5rem; border: 1px solid var(--border-color);
+            position: sticky; top: 2rem;
+        }
+        .info-item { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
+        .info-icon-box {
+            width: 36px; height: 36px; border-radius: 8px; background: #e7f1ff; color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+        }
+        
+        /* Search Input */
+        .form-control-search { padding-left: 2.5rem; }
+        .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-4 p-md-5" style="max-width: 1600px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="page-header">
+                    <h1>Gestión de Informes</h1>
+                </div>
+                <p class="text-muted mb-0">Administra los reportes Power BI por cliente.</p>
+            </div>
+            <button id="btn-create-new" class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm">
+                <i class="bi bi-plus-lg"></i> <span>Nuevo Informe</span>
+            </button>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-9">
+                
+                <div id="list-view" class="content-card">
+                    <div class="p-4 border-bottom border-light">
+                        <div class="row g-3">
+                            <div class="col-md-7 position-relative">
+                                <i class="bi bi-search search-icon"></i>
+                                <input id="search-input" type="text" class="form-control form-control-search" placeholder="Buscar por URL..." autocomplete="off">
+                            </div>
+                            <div class="col-md-5">
+                                <select id="company-filter" class="form-select">
+                                    <option value="">Todas las empresas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table-custom w-100">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Empresa Cliente</th>
+                                    <th>Enlace Power BI</th>
+                                    <th>Fecha Creación</th>
+                                    <th class="text-end pe-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-body">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-3 border-top border-light">
+                        <nav class="d-flex justify-content-end">
+                            <ul id="pagination" class="pagination pagination-sm mb-0"></ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <div id="form-view" class="content-card d-none p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <h4 id="form-title" class="fw-bold m-0 text-dark">Nuevo Informe</h4>
+                        <button id="btn-cancel-form" class="btn btn-light border btn-sm">Cancelar</button>
+                    </div>
+
+                    <div id="alert-container"></div>
+
+                    <form id="report-form" novalidate>
+                        <div class="row g-4">
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Empresa <span class="text-danger">*</span></label>
+                                <select class="form-select" id="id_empresa" required>
+                                    <option value="" disabled selected>Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">URL del Informe (Power BI) <span class="text-danger">*</span></label>
+                                <input type="url" id="url_informe" class="form-control" placeholder="https://app.powerbi.com/..." required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Fecha de Publicación <span class="text-danger">*</span></label>
+                                <input type="date" id="fecha_creacion" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-5 pt-3 border-top d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light px-4" id="btn-cancel-footer">Cancelar</button>
+                            <button type="submit" id="form-submit-btn" class="btn btn-primary px-4">Guardar Informe</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3">
+                <aside class="info-card">
+                    <h6 class="fw-bold mb-4 text-dark">Guía Rápida</h6>
+                    <div class="info-item">
+                        <div class="info-icon-box"><i class="bi bi-search"></i></div>
+                        <div>
+                            <strong class="d-block text-dark mb-1">Búsqueda</strong>
+                            <span class="text-muted small">Filtra rápidamente por URL o selecciona una empresa específica.</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon-box"><i class="bi bi-pencil-square"></i></div>
+                        <div>
+                            <strong class="d-block text-dark mb-1">Edición</strong>
+                            <span class="text-muted small">Actualiza los enlaces si cambian en Power BI.</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon-box"><i class="bi bi-shield-check"></i></div>
+                        <div>
+                            <strong class="d-block text-dark mb-1">Seguridad</strong>
+                            <span class="text-muted small">Solo los usuarios asignados a la empresa podrán ver el informe.</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">¿Eliminar Informe?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-muted">
+                    Esta acción no se puede deshacer. El enlace dejará de estar visible para el cliente.
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn">Sí, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/informescli.js"></script>
+</body>
+</html>

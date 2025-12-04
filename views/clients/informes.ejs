@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Informes</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon">
+
+    <style>
+        :root {
+            --if-primary: #0d6efd;
+            --if-text-main: #212529;
+            --if-text-muted: #6c757d;
+            --if-bg-main: #f8f9fc;
+            --if-bg-panel: #ffffff;
+            --if-border-color: #e2e8f0;
+            --if-font-sans: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--if-font-sans);
+            background-color: var(--if-bg-main);
+        }
+        .reports-page { 
+            padding: 2rem; 
+        }
+        .page-header h1 { 
+            font-weight: 700; 
+        }
+        .report-dropdown .btn {
+            font-weight: 500;
+            min-width: 350px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--if-bg-panel);
+        }
+        .report-dropdown .dropdown-menu {
+            width: 100%;
+            max-height: 400px;
+            overflow-y: auto;
+            border-color: var(--if-border-color);
+        }
+        .report-dropdown .dropdown-item { 
+            cursor: pointer; 
+            font-size: 0.95rem;
+        }
+        .report-dropdown .dropdown-item.active { 
+            font-weight: 600; 
+        }
+        .report-viewer-card {
+            background-color: var(--if-bg-panel);
+            border: 1px solid var(--if-border-color);
+            border-radius: 0.875rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            height: calc(100vh - 230px); 
+            min-height: 600px;
+            overflow: hidden;
+        }
+        .report-viewer-card iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: 0; 
+        }
+        .empty-state { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100%; 
+            text-align: center; 
+            color: var(--if-text-muted); 
+        }
+        .empty-state i { 
+            font-size: 3rem; 
+            color: #ced4da; 
+        }
+
+        /* ===== ESTILO PARA EL LOGO DEL HEADER ===== */
+        .header-logo {
+            max-height: 45px;
+            width: auto;
+        }
+        @media (max-width: 576px) {
+            .header-logo {
+                max-height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="reports-page">
+
+    <div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h1 class="h3">Visor de Informes BI</h1>
+            <p class="text-muted mb-0">Selecciona un informe de la lista para cargarlo.</p>
+        </div>
+        <div class="mt-2 mt-sm-0">
+            <img src="/img/logo_paginas_cliente/logo386blanco.png" alt="Logo 386 SMART" class="header-logo">
+        </div>
+    </div>
+    <% if (informes && informes.length > 0) { %>
+        <div class="dropdown report-dropdown mb-4">
+            <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="report-selector-btn">
+            </button>
+            <ul class="dropdown-menu" id="report-selector-list">
+                <% informes.forEach((informe, index) => { %>
+                    <li>
+                        <a class="dropdown-item <%= index === 0 ? 'active' : '' %>" href="#" 
+                           data-url="<%= informe.Url_Informe %>"
+                           data-text="Informe del <%= new Date(informe.fecha_creacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) %>">
+                            <i class="bi bi-file-earmark-bar-graph me-2"></i>
+                            Informe del <%= new Date(informe.fecha_creacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                        </a>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
+
+    <div class="report-viewer-card">
+        <% if (informes && informes.length > 0) { %>
+            <iframe id="report-iframe" src="<%= informes[0].Url_Informe %>" title="Informe de Power BI"></iframe>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="bi bi-file-earmark-x"></i>
+                <h4 class="mt-3 fw-bold">No hay informes disponibles</h4>
+                <p>Cuando se generen nuevos informes, aparecerán listados aquí.</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/clients/informes.js"></script>
+
+</body>
+</html>

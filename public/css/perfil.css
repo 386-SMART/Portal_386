@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.banner {
+  width: 100%;
+  height: 20vh;
+  position: relative;
+  background: url('../img/banner386.png') no-repeat center center/cover;
+  filter: blur(1px);
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    position: absolute;
+    bottom: 60%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    background: url('../img/logo386.png') no-repeat center center/cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-editor {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    position: absolute;
+    bottom: calc(60% - 30px);
+    left: calc(50% + 60px);
+    transform: translate(-50%, -350%);
+    background: url('../img/Editar.png') no-repeat center center/cover;
+    z-index: 2;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.content {
+    text-align: center;
+    margin-top: 500px; /* Increased margin-top to move the container further down */
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+h1 {
+    margin-top: 50px;
+  font-size: 25px;
+  margin-bottom: 30px;
+}
+
+.contenedor_opciones1, .contenedor_opciones2 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.contenedor_opciones1 {
+  background-color: #ffffff;
+  border-radius: 1px;
+}
+
+.contenedor_opciones2 {
+  background-color: #ffffff;
+  border-radius: 1px;
+}
+
+.texto1, .texto2, .texto3, .texto1_2, .texto2_2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.texto1 label, .texto2 label, .texto3 label, .texto1_2 label, .texto2_2 label {
+  font-weight: bold;
+}
+
+.texto1 span, .texto2 span, .texto3 span, .texto1_2 span, .texto2_2 span {
+  font-size: 16px;
+}
+
+.edit-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.edit-btn i {
+  font-size: 18px;
+  color: #007BFF;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

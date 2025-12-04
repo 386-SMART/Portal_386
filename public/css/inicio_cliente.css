@@ -1,0 +1,585 @@
+
+      :root {
+        --bg-main: #f7f9fb;
+        --bg-card: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --border-color: #e6e8eb;
+        --brand-blue: #0d6efd;
+        --brand-teal: #00a693;
+        --brand-teal-soft: rgba(0, 166, 147, 0.12);
+      }
+      * {
+        letter-spacing: 0.1px;
+      }
+      body {
+        background: var(--bg-main);
+        color: var(--text-primary);
+      }
+      .page-header h1 {
+        font-weight: 800;
+      }
+      .page-header p {
+        color: var(--text-secondary);
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 26px rgba(16, 24, 40, 0.06);
+      }
+      .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.25rem;
+      }
+      .card-title {
+        font-weight: 700;
+        margin: 0;
+      }
+      .card-body {
+        padding: 1.25rem 1.25rem 1.5rem;
+      }
+
+      .kpi-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+      }
+      .kpi-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--brand-teal-soft);
+      }
+      .kpi-icon i {
+        font-size: 1.6rem;
+        color: var(--brand-teal);
+      }
+      .kpi-label {
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.06rem;
+      }
+      .kpi-value {
+        font-size: 2.15rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 320px;
+      }
+      canvas {
+        user-select: none;
+      }
+      #chart-modelos:hover,
+      #chart-visitas:hover {
+        cursor: pointer;
+      }
+
+      /* Botón soft */
+      .btn-soft {
+        --bs-btn-bg: #f2f6f9;
+        --bs-btn-hover-bg: #e8eef3;
+        --bs-btn-border-color: #e6eef6;
+        --bs-btn-hover-border-color: #d9e6f1;
+        --bs-btn-color: #34495e;
+      }
+
+      /* Estado vacío */
+      .empty {
+        color: var(--text-secondary);
+        min-height: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .empty i {
+        font-size: 1.6rem;
+        opacity: 0.8;
+      }
+
+      /* --- Modal Detalle de Equipos --- */
+      .modal-equipos .modal-content {
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 18px 40px rgba(16, 24, 40, 0.14);
+      }
+      .modal-equipos .modal-header {
+        background: #f7f9fb;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .modal-equipos .modal-title {
+        font-weight: 800;
+      }
+      .modal-equipos .modal-body {
+        padding-top: 0.5rem;
+      }
+      .modal-equipos .table-wrapper {
+        max-height: 60vh;
+        overflow: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+      }
+      .modal-equipos thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #f3f6fa;
+      }
+      .modal-equipos .serial {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .modal-equipos .toolbar {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.5rem 0 1rem;
+      }
+      .copy-pill {
+        cursor: pointer;
+        padding: 0.25rem 0.45rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.35rem;
+        background: #fff;
+      }
+      .copy-pill:hover {
+        background: #f8fafc;
+      }
+
+      /* === ESTILOS PARA EL ASISTENTE VIRTUAL === */
+      .chat-widget {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 1050;
+      }
+
+      .chat-toggle-button {
+        width: 60px;
+        height: 60px;
+        background-color: var(--brand-blue);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+      .chat-toggle-button:hover {
+        transform: scale(1.1);
+      }
+
+      .chat-window {
+        width: 400px;
+        max-height: 600px;
+        background-color: var(--bg-card);
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 3px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        bottom: 80px; /* Espacio sobre el botón */
+        right: 0;
+        overflow: hidden;
+        transform-origin: bottom right;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      /* Animación para aparecer/desaparecer */
+      .chat-window.d-none {
+        transform: scale(0.9);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .chat-header {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .chat-header h5 {
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .chat-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .message {
+        margin-bottom: 1rem;
+        display: flex;
+        max-width: 85%;
+      }
+      .message-content {
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        line-height: 1.6;
+      }
+      
+      /* Estilos mejorados para contenido HTML en respuestas del bot */
+      .message-content strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--brand-blue);
+        font-size: 0.95rem;
+      }
+      .message-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0 0;
+      }
+      .message-content li {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.4rem;
+        background: rgba(13, 110, 253, 0.05);
+        border-left: 3px solid var(--brand-blue);
+        border-radius: 0.375rem;
+        font-size: 0.9rem;
+      }
+      .message-content li:last-child {
+        margin-bottom: 0;
+      }
+      .message-content a {
+        color: var(--brand-blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .message-content a:hover {
+        text-decoration: underline;
+      }
+      
+      .message.bot {
+        align-self: flex-start;
+      }
+      .message.bot .message-content {
+        background-color: #f8f9fa;
+        color: var(--text-primary);
+        border-top-left-radius: 0.25rem;
+        border: 1px solid var(--border-color);
+      }
+      .message.user {
+        align-self: flex-end;
+        margin-left: auto; /* Alinea a la derecha */
+      }
+      .message.user .message-content {
+        background-color: var(--brand-blue);
+        color: white;
+        border-top-right-radius: 0.25rem;
+      }
+
+      .chat-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        background-color: #f8f9fa;
+        flex-shrink: 0;
+      }
+
+      /* Añade esto a tu <style> en inicio.ejs */
+
+      .chat-quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .chat-quick-actions .btn {
+        flex-grow: 1;
+      }
+
+      /* === ESTILOS MEJORADOS PARA EL INPUT DEL CHAT === */
+
+      /* El formulario que contiene el input y el botón */
+      .chat-input-form {
+        display: flex; /* Ya lo tienes con d-flex, esto lo refuerza */
+        gap: 0.5rem; /* Añade un pequeño espacio entre el input y el botón */
+        align-items: center;
+      }
+
+      /* El campo de texto */
+      .chat-input-form #chat-input {
+        flex-grow: 1; /* Hace que el input ocupe todo el espacio disponible */
+        border-radius: 20px; /* Bordes más redondeados */
+        border-color: var(--border-color);
+        padding: 0.5rem 1rem;
+      }
+      .chat-input-form #chat-input:focus {
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25); /* Sombra de foco más sutil */
+        border-color: var(--brand-blue);
+      }
+
+      /* El botón de enviar */
+      .chat-input-form button[type="submit"] {
+        width: 40px; /* Ancho fijo */
+        height: 40px; /* Alto fijo */
+        border-radius: 50%; /* ¡Lo hace perfectamente redondo! */
+        padding: 0; /* Quitamos el padding para que el ícono se centre bien */
+        flex-shrink: 0; /* Evita que el botón se encoja */
+
+        /* Centramos el ícono dentro del círculo */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition: background-color 0.2s ease;
+      }
+      .chat-input-form button[type="submit"]:hover {
+        background-color: #0b5ed7; /* Un poco más oscuro al pasar el mouse */
+      }
+
+        /* === PALETA DE COLORES MEJORADA === */
+  :root {
+    --primary-blue: #0d6efd;
+    --primary-blue-soft: #e7f0ff;
+    --primary-green: #198754;
+    --primary-green-soft: #e8f3ed;
+    --primary-orange: #fd7e14;
+    --primary-orange-soft: #fff2e7;
+
+    --bg-main: #f8f9fc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;   /* Más oscuro para mejor contraste */
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * {
+    letter-spacing: normal; /* Reseteamos el letter-spacing para un look más natural */
+  }
+
+  body {
+    background: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+  }
+
+  /* --- Tipografía Mejorada --- */
+  .page-header h1 {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+
+  /* --- Tarjetas con Estilo Refinado --- */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.875rem; /* 14px */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+  }
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* --- NUEVO ESTILO DE KPI CARDS --- */
+  .kpi-card-improved {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card-improved .kpi-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  .kpi-card-improved .kpi-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .kpi-card-improved .kpi-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 5rem;
+    opacity: 0.08;
+    color: var(--text-primary);
+  }
+  .kpi-card-improved .kpi-trend {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
+  .kpi-trend .bi-arrow-up-right { color: var(--primary-green); }
+  .kpi-trend .bi-arrow-down-right { color: var(--primary-orange); }
+
+  .chart-container {
+    height: 350px; /* Un poco más de altura */
+  }
+
+  /* ===== Banners de Marketing (Cliente) ===== */
+.marketing-stack { display: flex; flex-direction: column; gap: .5rem; }
+.mkt-banner {
+  border: 1px solid var(--border-color);
+  border-radius: .75rem;
+  background: #fff;
+  padding: .75rem .9rem;
+  display: flex; gap: .9rem; align-items: start;
+  box-shadow: 0 3px 8px rgba(16,24,40,.05);
+}
+.mkt-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.mkt-body { flex: 1; }
+.mkt-title { font-weight: 700; margin: 0 0 .15rem; }
+.mkt-meta { color: var(--text-secondary); font-size: .85rem; }
+.mkt-actions { display: flex; gap: .5rem; align-items: center; }
+.mkt-close { border: 0; background: transparent; color: #64748b; }
+.mkt-close:hover { color: #0f172a; }
+
+/* Colores por severidad */
+.mkt-info .mkt-icon    { background: #e7f0ff; color: #0d6efd; }
+.mkt-warning .mkt-icon { background: #fff2e7; color: #fd7e14; }
+.mkt-danger .mkt-icon  { background: #fde7ea; color: #dc3545; }
+
+/* “Ver más” colapsable */
+.mkt-more { border-top: 1px dashed var(--border-color); margin-top: .25rem; padding-top: .5rem; }
+
+.notifications-widget{
+  position: fixed; bottom: 25px; right: 95px; z-index: 1049;
+}
+.notif-toggle-button{
+  width: 50px; height: 50px; border-radius: 50%;
+  background:#fff; border:1px solid var(--border-color);
+  box-shadow:0 6px 18px rgba(16,24,40,.08);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.25rem; color:#0d6efd;
+}
+.notif-badge{
+  position:absolute; top:-6px; right:-6px;
+  min-width:22px; height:22px; border-radius:11px;
+  background:#dc3545; color:#fff; font-size:.75rem;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 6px;
+}
+.notif-panel{
+  position:absolute; right:0; bottom:60px; width:360px; max-height:60vh;
+  background:#fff; border:1px solid var(--border-color);
+  border-radius:.75rem; overflow:hidden;
+  box-shadow:0 12px 28px rgba(16,24,40,.18);
+}
+.notif-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.75rem 1rem; border-bottom:1px solid var(--border-color);
+  background:#f8fafc;
+}
+.notif-body{ max-height:calc(60vh - 48px); overflow:auto; }
+.notif-item{
+  padding:.75rem 1rem; border-bottom:1px solid #f1f5f9;
+}
+.notif-item:last-child{ border-bottom:0; }
+.notif-title{ font-weight:700; font-size:.95rem; }
+.notif-meta{ font-size:.8rem; color:#64748b; }
+.notif-cta{ margin-top:.25rem; }
+.notif-icon{
+  width:28px; height:28px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  margin-right:.5rem; background:#fee2e2; color:#ef4444;
+}
+
+/* ============================================== */
+/* === ESTILOS PARA NOTIFICACIONES MEJORADAS === */
+/* ============================================== */
+
+/* Para el panel principal (.mkt-banner) */
+.mkt-message-short,
+.mkt-message-full {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.mkt-message-full {
+    white-space: pre-wrap; /* Respeta saltos de línea y espacios */
+}
+.mkt-actions {
+    align-self: flex-end; /* Alinea acciones abajo */
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+.mkt-toggle-details {
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.25rem 0;
+}
+
+/* Para el menú desplegable (.notif-item) */
+.notif-header-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.notif-message-short,
+.notif-message-full {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.notif-message-full {
+    white-space: pre-wrap;
+}
+.notif-footer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+.notif-toggle-details {
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0;
+}

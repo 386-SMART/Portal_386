@@ -1,0 +1,26 @@
+/* FormularioA.css */
+body {
+  background-color: #f0f4f8;
+}
+
+h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+#loader {
+  height: 200px;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+#searchInput {
+  max-width: 400px;
+  margin: 0 auto;
+}

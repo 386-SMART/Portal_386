@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Tickets</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --sidebar-color: #0d6efd; /* El azul de tu menú lateral */
+            --bg-body: #f4f6f9;
+            --text-dark: #344767;
+            --text-muted: #8392ab;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+        }
+
+        /* --- Títulos --- */
+        .page-title {
+            color: var(--sidebar-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Filtros Estilizados --- */
+        .filter-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-right: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-filter {
+            border: 1px solid #e9ecef;
+            background: white;
+            color: var(--text-dark);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-filter:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        /* Estado Activo del filtro: Usa el mismo azul del menú */
+        .btn-check:checked + .btn-filter {
+            background-color: var(--sidebar-color);
+            color: white;
+            border-color: var(--sidebar-color);
+            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+        }
+
+        /* --- Tarjetas Estilo "Clean Corporate" --- */
+        .ticket-card-clean {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 27px 0 rgba(0,0,0,0.05); /* Sombra suave premium */
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-left: 6px solid transparent; /* Aquí irá el color del estado */
+        }
+
+        .ticket-card-clean:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 27px 0 rgba(0,0,0,0.1);
+        }
+
+        .card-body-clean {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-code {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--sidebar-color); /* Conecta con el menú */
+            margin-bottom: 0.2rem;
+        }
+
+        .company-text {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* Badges de Estado */
+        .status-badge {
+            padding: 0.35em 0.8em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Datos Grid */
+        .info-grid {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto; /* Empuja hacia abajo */
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .btn-action {
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.6rem;
+            text-transform: none;
+            letter-spacing: 0;
+            background-color: white;
+            border: 1px solid var(--sidebar-color);
+            color: var(--sidebar-color);
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: var(--sidebar-color);
+            color: white;
+        }
+
+        .copy-icon {
+            cursor: pointer;
+            color: #adb5bd;
+            transition: color 0.2s;
+        }
+        .copy-icon:hover { color: var(--sidebar-color); }
+
+        /* Colores de Borde Lateral (Indicadores) */
+        .border-warning { border-left-color: #fb8c00 !important; }
+        .border-danger { border-left-color: #ea0606 !important; }
+        .border-success { border-left-color: #4caf50 !important; }
+        .border-info { border-left-color: #0dcfda !important; } /* Cyan moderno */
+        .border-primary { border-left-color: #0d6efd !important; }
+        .border-secondary { border-left-color: #a0aebf !important; }
+
+        /* Colores de Badges (Fondo suave) */
+        .badge-soft-warning { background-color: #fff2e0; color: #fb8c00; }
+        .badge-soft-danger { background-color: #ffe2e5; color: #ea0606; }
+        .badge-soft-success { background-color: #eaffea; color: #4caf50; }
+        .badge-soft-info { background-color: #e0faff; color: #00acc1; }
+        .badge-soft-primary { background-color: #e7f1ff; color: #0d6efd; }
+        .badge-soft-secondary { background-color: #f3f6f9; color: #64748b; }
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid py-4 px-md-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="page-title mb-1">Panel de Control</h3>
+            <p class="text-muted small mb-0">Resumen operativo de tickets</p>
+        </div>
+        <% if (locals.tvToken) { %>
+        <a href="/public-view/<%= tvToken %>" target="_blank" class="btn btn-dark rounded-pill px-4 btn-sm">
+            <i class="bi bi-tv me-2"></i>Modo TV
+        </a>
+        <% } %>
+    </div>
+
+    <div class="filter-container">
+        <span class="filter-label"><i class="bi bi-funnel me-1"></i>Estado:</span>
+        <div id="status-filter-group" class="d-flex flex-wrap gap-2">
+            <input type="checkbox" class="btn-check" id="status-all" checked>
+            <label class="btn btn-filter" for="status-all">Todos</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-1" data-status="En Espera de Pieza">
+            <label class="btn btn-filter" for="status-1">En Espera</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-2" data-status="En Proceso de Reparación">
+            <label class="btn btn-filter" for="status-2">En Reparación</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-3" data-status="Próximo a Devolver">
+            <label class="btn btn-filter" for="status-3">Próximo</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-4" data-status="Devolución Vencida">
+            <label class="btn btn-filter text-danger fw-bold" for="status-4">Vencido</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-5" data-status="Devolución Extendida">
+            <label class="btn btn-filter" for="status-5">Extendido</label>
+
+            <input type="checkbox" class="btn-check status-filter" id="status-6" data-status="Finalizado y Devuelto">
+            <label class="btn btn-filter" for="status-6">Finalizado</label>
+        </div>
+    </div>
+
+    <div class="row g-4" id="tickets-grid">
+        </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/vistas-tickets.js?v=<%= Date.now() %>"></script>
+</body>
+</html>

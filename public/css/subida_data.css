@@ -1,0 +1,143 @@
+:root {
+    --brand-primary: #0080ff; /* Azulino */
+    --brand-secondary: #5d5d5d; /* Plomo */
+    --body-bg: #f8f9fa;
+    --content-bg: #ffffff;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --border-color: #e9ecef;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--body-bg);
+    margin: 0;
+}
+
+.page-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    grid-template-areas:
+        "header header"
+        "main   info";
+    min-height: 100vh;
+}
+
+/* --- Cabecera --- */
+.page-header {
+    grid-area: header;
+    background-color: var(--content-bg);
+    padding: 1.25rem 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* --- Sección Principal --- */
+.main-section {
+    grid-area: main;
+    background-color: var(--content-bg);
+    padding: 2.5rem;
+}
+
+/* Tarjetas y Pasos */
+.workflow-card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background-color: #fff;
+}
+.workflow-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+.step-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--brand-primary);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-right: 0.75rem;
+}
+
+/* Acordeón de Guía */
+.accordion-button {
+    font-weight: 600;
+}
+.accordion-button:not(.collapsed) {
+    background-color: #eef2ff;
+    color: var(--brand-primary);
+}
+.accordion-button:focus {
+    box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.15);
+}
+.accordion-item {
+    border-color: var(--border-color);
+}
+
+/* NUEVO: Contenedor para las guías de referencia */
+.guia-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Tabla de Previsualización */
+.table-responsive {
+    max-height: 450px;
+    overflow-y: auto;
+}
+.table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+}
+
+/* --- Panel de Información --- */
+.info-panel {
+    grid-area: info;
+    background-color: #f4f7fc;
+    border-left: 1px solid var(--border-color);
+    padding: 2.5rem;
+}
+.info-panel h5 { font-weight: 600; }
+.info-panel ul { list-style-type: none; padding: 0; margin-top: 1.5rem; }
+.info-panel li { display: flex; align-items: flex-start; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+.info-panel .info-icon { color: var(--brand-primary); font-size: 1.2rem; margin-right: 1rem; margin-top: 0.1rem; }
+
+/* Estilos generales de formulario */
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.15);
+}
+.btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    font-weight: 600;
+}
+
+/* --- Diseño Responsivo --- */
+@media (max-width: 992px) {
+    .page-container {
+        grid-template-columns: 1fr;
+        grid-template-areas: "header" "main" "info";
+    }
+    .info-panel { border-left: none; border-top: 1px solid var(--border-color); }
+    .page-header, .main-section, .info-panel {
+        padding: 1.5rem;
+    }
+}

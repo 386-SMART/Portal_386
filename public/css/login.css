@@ -1,0 +1,116 @@
+:root {
+    --brand-primary: #0080ff; /* Azulino */
+    --brand-secondary: #5d5d5d; /* Plomo */
+    --body-bg: #f8f9fa;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden; /* Evita barras de scroll innecesarias */
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Panel Izquierdo (Branding) */
+.left-pane {
+    flex: 0 0 45%;
+    background-color: var(--brand-primary);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.welcome-content .logo {
+    max-width: 180px;
+    margin-bottom: 2rem;
+}
+
+.welcome-content .greeting-title {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-content .slogan {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 400px;
+}
+
+/* Panel Derecho (Formulario) */
+.right-pane {
+    flex: 1;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.login-form-wrapper {
+    width: 100%;
+    max-width: 400px;
+}
+.login-form-wrapper h2 {
+    font-weight: 600;
+}
+
+/* Estilos de Formulario */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+}
+.form-control:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.15);
+}
+.input-group .form-control {
+    border-right: none;
+}
+.input-group .form-control:focus {
+    border-right: none;
+}
+.input-group .btn {
+    border-left: none;
+}
+.input-group .btn:hover, .input-group .btn:focus {
+    background-color: #f8f9fa;
+}
+
+.btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+/* Diseño Responsivo */
+@media (max-width: 991px) {
+    .login-container {
+        flex-direction: column;
+    }
+    .left-pane {
+        flex: 0 0 auto; /* La base del flex se ajusta al contenido */
+        padding: 2.5rem 1.5rem;
+    }
+    .right-pane {
+        flex-grow: 1;
+    }
+    .welcome-content .greeting-title {
+        font-size: 2rem;
+    }
+}

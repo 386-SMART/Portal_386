@@ -1,0 +1,567 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* === PALETA CORPORATIVA (Fiel a tu marca) === */
+  --brand-primary: #0080ff;
+  /* Tu Azul */
+  --brand-primary-dark: #006bd6;
+  /* Un tono apenas más oscuro para gradientes sutiles */
+  --text-white: #ffffff;
+  --text-white-muted: rgba(255, 255, 255, 0.8);
+
+  /* === UI VARIABLES === */
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 78px;
+  /* Ajustado a tu ancho original */
+  --item-height: 48px;
+  --border-radius: 12px;
+  --transition-speed: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* === FONDOS === */
+  --bg-main: #f3f5f9;
+  --bg-active: #ffffff;
+  /* Blanco puro para el item activo */
+  --text-active: var(--brand-primary);
+  /* Texto azul para el item activo */
+  --bg-hover: rgba(255, 255, 255, 0.15);
+}
+
+/* === CORRECCIÓN 1: El reset universal NO debe tener font-family === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === CORRECCIÓN 2: La fuente se aplica al body === */
+body {
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  background-color: var(--bg-main);
+}
+
+/* ===========================
+   SIDEBAR CONTAINER
+   =========================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--sidebar-width-collapsed);
+  background: var(--brand-primary);
+  /* Sutil gradiente vertical para dar elegancia sin cambiar el color base */
+  background: linear-gradient(180deg, var(--brand-primary) 20%, var(--brand-primary-dark) 100%);
+  padding: 10px 14px;
+  transition: width var(--transition-speed);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar.open {
+  width: var(--sidebar-width);
+}
+
+/* ===========================
+   HEADER: LOGO & TOGGLE
+   =========================== */
+.logo-details {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 25px;
+  /* Más espacio abajo del logo */
+}
+
+.logo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  overflow: hidden;
+}
+
+/* El logo solo se ve cuando está abierto */
+.sidebar.open .logo-wrapper {
+  opacity: 1;
+}
+
+.logo-details img {
+  height: 45px;
+  /* Tamaño ajustado */
+  object-fit: contain;
+  background: white;
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#btn-toggle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 26px;
+  color: var(--text-white);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  z-index: 20;
+  background: transparent;
+  /* Asegura que no tenga fondo tapando */
+}
+
+/* Mover la hamburguesa a la derecha al abrir */
+.sidebar.open #btn-toggle {
+  left: 90%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===========================
+   BODY: NAV LIST
+   =========================== */
+.nav-list {
+  list-style: none;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+}
+
+.nav-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.nav-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nav-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.nav-list li {
+  position: relative;
+  margin: 6px 0;
+}
+
+/* Estilo Cápsula del enlace */
+.nav-list li a {
+  display: flex;
+  align-items: center;
+  height: var(--item-height);
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  color: var(--text-white);
+  white-space: nowrap;
+}
+
+/* Hover */
+.nav-list li a:hover {
+  background: var(--bg-hover);
+}
+
+/* === ESTADO ACTIVO (ITEM SELECCIONADO) === */
+.nav-list li a.active {
+  background: var(--bg-active);
+  /* Fondo Blanco */
+  color: var(--text-active);
+  /* Texto Azul */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Sombra suave */
+  font-weight: 600;
+}
+
+/* === CORRECCIÓN 3: ICONOS VISIBLES === */
+/* Aseguramos que el icono tenga dimensiones y centrado Flexbox */
+.nav-list li a i {
+  min-width: 50px;
+  height: 50px;
+
+  /* Centrado perfecto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+/* El icono hereda el color del texto (Blanco normalmente, Azul cuando activo) */
+.nav-list li a.active i {
+  color: var(--brand-primary);
+}
+
+.nav-list li a .links_name {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+
+.sidebar.open .nav-list li a .links_name {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.1s;
+}
+
+/* Tooltips (Solo cuando está cerrado) */
+.sidebar:not(.open) .nav-list li:hover .tooltip {
+  opacity: 1;
+  top: 50%;
+  visibility: visible;
+}
+
+.nav-list li .tooltip {
+  position: absolute;
+  left: 125%;
+  top: 0;
+  transform: translateY(-50%);
+  border-radius: 6px;
+  padding: 6px 12px;
+  background: #333;
+  color: white;
+  font-size: 13px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0s;
+  z-index: 200;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Separador flexible */
+.spacer {
+  flex-grow: 1;
+  min-height: 20px;
+}
+
+/* ===========================
+   COMPANY SWITCHER (Custom)
+   =========================== */
+.company-switcher-container {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 10px;
+  margin-bottom: 5px;
+}
+
+.switcher-toggle {
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.switcher-toggle::after {
+  content: '\ecad';
+  /* Flecha abajo bx */
+  font-family: 'Boxicons';
+  font-size: 16px;
+  margin-right: 15px;
+  transition: transform 0.3s;
+  opacity: 0;
+}
+
+.sidebar.open .switcher-toggle::after {
+  opacity: 1;
+}
+
+.company-switcher-container.open .switcher-toggle::after {
+  transform: rotate(180deg);
+}
+
+.sub-menu {
+  list-style: none;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+  padding: 5px;
+  display: none;
+}
+
+.company-switcher-container.open .sub-menu {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.sub-menu li a {
+  height: 40px;
+  font-size: 0.85rem;
+  color: var(--text-white-muted);
+  padding-left: 10px;
+}
+
+.sub-menu li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sub-menu li a.active-company {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.sub-menu li a i {
+  min-width: 30px;
+  /* Iconos más pequeños en submenú */
+  font-size: 18px;
+  height: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Si el sidebar está cerrado, ocultar submenús */
+.sidebar:not(.open) .switcher-toggle::after,
+.sidebar:not(.open) .sub-menu {
+  display: none !important;
+}
+
+/* ===========================
+   FOOTER: USER PROFILE
+   =========================== */
+.profile-container {
+  margin-top: 5px;
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.2);
+  /* Fondo oscuro sutil para separar */
+  overflow: hidden;
+  transition: all var(--transition-speed);
+}
+
+.profile {
+  position: relative;
+  padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+.profile-content {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  width: 100%;
+  /* Ocupar espacio */
+}
+
+.sidebar.open .profile-content {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.avatar {
+  min-width: 36px;
+  height: 36px;
+  background: white;
+  color: var(--brand-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  margin-right: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-white);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.role {
+  font-size: 11px;
+  color: var(--text-white-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#log_out {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  color: var(--text-white-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+#log_out:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+/* Cuando está abierto, mover el logout a la derecha */
+.sidebar.open #log_out {
+  left: auto;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+}
+
+/* ===========================
+   MAIN CONTENT & LOADER
+   =========================== */
+.home-section {
+  position: relative;
+  background: var(--bg-main);
+  min-height: 100vh;
+  left: var(--sidebar-width-collapsed);
+  width: calc(100% - var(--sidebar-width-collapsed));
+  transition: all var(--transition-speed);
+}
+
+.sidebar.open~.home-section {
+  left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+}
+
+iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+
+/* Loader de Navegación */
+.loader-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  backdrop-filter: blur(2px);
+}
+
+.loader-container.d-none {
+  display: none;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 128, 255, 0.1);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Welcome Screen */
+.welcome-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.welcome-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.welcome-logo {
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+.welcome-title {
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.welcome-sub {
+  color: #64748b;
+  margin-bottom: 25px;
+}
+
+.welcome-progress {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.welcome-progress::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 40%;
+  background: var(--brand-primary);
+  border-radius: 10px;
+  animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+  0% {
+    left: -40%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}

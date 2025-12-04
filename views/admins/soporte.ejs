@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel de Soporte</title>
+
+    <link rel="stylesheet" href="/css/soporte.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon">
+
+    <script>
+      window.__USER_NAME__ = "<%= user.nombre %>";
+    </script>
+  </head>
+  <body>
+    <div class="d-flex">
+      <nav class="sidebar">
+        <div class="logo-details">
+          <img src="/img/logo386blanco.png" alt="Logo 386" />
+          <i class="bx bx-menu" id="btn-toggle"></i>
+        </div>
+
+        <ul class="nav-list">
+          <% menuItems.forEach(item => { %>
+          <li>
+            <a href="#" class="sidebar-link" data-path="<%= item.path %>">
+              <i class="bi <%= item.icon %>"></i>
+              <span class="links_name"><%= item.label %></span>
+            </a>
+            <span class="tooltip"><%= item.label %></span>
+          </li>
+          <% }) %>
+        </ul>
+
+        <div class="profile">
+          <div class="profile-details">
+            <div class="name_company">
+              <div class="name"><%= user.nombre %></div>
+              <div class="company">Soporte Técnico</div>
+            </div>
+          </div>
+          <i class="bx bx-log-out" id="logout-btn"></i>
+        </div>
+      </nav>
+
+      <section class="home-section">
+        <div id="welcome-container" class="welcome-screen"></div>
+
+        <div id="iframe-loader" class="loader-container d-none">
+          <div
+            class="spinner-border"
+            style="color: var(--brand-primary); width: 3rem; height: 3rem"
+            role="status"
+          ></div>
+        </div>
+
+        <div id="content-frame" style="display: none">
+          <iframe frameborder="0"></iframe>
+        </div>
+      </section>
+    </div>
+
+    <script src="/js/soporte.js"></script>
+  </body>
+</html>

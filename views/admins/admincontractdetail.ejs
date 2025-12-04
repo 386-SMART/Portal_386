@@ -1,0 +1,451 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle: <%= contrato.nombre_contrato %></title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --bg-body: #f3f5f9;
+            --primary: #0d6efd;
+            --primary-soft: #e7f1ff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body { 
+            background-color: var(--bg-body); 
+            font-family: var(--font-main);
+            color: var(--text-dark);
+        }
+
+        /* Header */
+        .header-section h1 { font-weight: 700; font-size: 1.5rem; margin: 0; }
+        .client-badge {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Cards */
+        .content-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card-header-custom {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            background-color: #fff;
+            color: var(--text-dark);
+        }
+
+        /* Tabs */
+        .nav-tabs-custom {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 1rem;
+            background: #fff;
+            border-radius: 1rem 1rem 0 0;
+        }
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 1rem 1.25rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-tabs-custom .nav-link:hover { color: var(--primary); }
+        .nav-tabs-custom .nav-link.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: transparent;
+        }
+        .nav-tabs-custom .badge {
+            background-color: var(--primary-soft);
+            color: var(--primary);
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        /* Scrollable Content Areas */
+        .scrollable-area {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        /* Document Grid */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+        .doc-card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .doc-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(13,110,253,0.08);
+            transform: translateY(-2px);
+        }
+        .doc-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Sidebar Widgets */
+        .stat-row {
+            display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;
+        }
+        .stat-label { color: var(--text-muted); }
+        .stat-val { font-weight: 600; }
+
+        .btn-back {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            padding: 0.4rem 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-back:hover { background: #f8fafc; color: var(--text-dark); border-color: #cbd5e1; }
+        
+        /* Inventory Table */
+        .table-inventory th {
+            background-color: #f8fafc;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-inventory td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+        
+        /* Services List */
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .service-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background-color: #ecfdf5;
+            color: #059669;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-4 p-md-5">
+        
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="/admin/visualizarcontratos" class="btn-back">
+                        <i class="bi bi-arrow-left me-1"></i> Volver
+                    </a>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-3 py-1 rounded-pill">Vigente</span>
+                </div>
+                <h1 class="mb-2"><%= contrato.nombre_contrato %></h1>
+                <div class="client-badge">
+                    <i class="bi bi-building"></i> <%= contrato.empresa_nombre %>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                <div class="content-card p-0 border-0 shadow-sm" style="background: transparent; box-shadow: none; border: none;">
+                    
+                    <div class="bg-white rounded-top border border-bottom-0">
+                        <ul class="nav nav-tabs nav-tabs-custom" id="contractDetailTab" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#resumen">Resumen</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#inventario">
+                                    Inventario <span class="badge rounded-pill"><%= equipos.length %></span>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#servicios">Servicios</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documentos">
+                                    Documentos <span class="badge rounded-pill"><%= documentos.length %></span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white border rounded-bottom p-0 tab-content" style="min-height: 450px;">
+                        
+                        <div class="tab-pane fade show active p-4" id="resumen">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-3">Descripción</h6>
+                            <div class="p-3 bg-light rounded border mb-4">
+                                <p class="mb-0 text-dark" style="line-height: 1.6; font-size: 0.95rem;">
+                                    <%= contrato.descripcion || 'No se ha registrado una descripción.' %>
+                                </p>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <h6 class="text-uppercase text-muted fw-bold small mb-3">Datos Financieros</h6>
+                                        <div class="stat-row">
+                                            <span class="stat-label">Moneda</span>
+                                            <span class="stat-val"><%= contrato.moneda || 'PEN' %></span>
+                                        </div>
+                                        <div class="stat-row">
+                                            <span class="stat-label">Categoría</span>
+                                            <span class="stat-val"><%= contrato.categoria || 'General' %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <h6 class="text-uppercase text-muted fw-bold small mb-3">Servicios Activos</h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <% if (contrato.implementacion) { %>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">Implementación</span>
+                                            <% } %>
+                                            <% if (contrato.mantenimiento) { %>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">Mantenimiento</span>
+                                            <% } %>
+                                            <% if (contrato.devolucion_de_equipos) { %>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">Devolución</span>
+                                            <% } %>
+                                            <% if (contrato.preparacion_de_imagen) { %>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">Prep. Imagen</span>
+                                            <% } %>
+
+                                            <% if (servicios && servicios.length > 0) { %>
+                                                <% servicios.forEach(s => { %>
+                                                    <span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info-subtle"><%= s.nombre_servicio %></span>
+                                                <% }) %>
+                                            <% } %>
+
+                                            <% if (!contrato.implementacion && !contrato.mantenimiento && !contrato.devolucion_de_equipos && !contrato.preparacion_de_imagen && (!servicios || servicios.length === 0)) { %>
+                                                <span class="text-muted small fst-italic">Sin servicios registrados</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="inventario">
+                            <div class="p-3 border-bottom bg-light">
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <select id="filtro-categoria-inventario" class="form-select form-select-sm">
+                                            <option value="">Todas las Categorías</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="filtro-modelo-inventario" class="form-select form-select-sm">
+                                            <option value="">Todos los Modelos</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="search" id="filtro-serie-inventario" class="form-control form-control-sm" placeholder="Buscar serie...">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive scrollable-area">
+                                <table class="table table-hover table-inventory mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4">Serie (S/N)</th>
+                                            <th>Modelo</th>
+                                            <th>Categoría</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventario-tbody">
+                                        </tbody>
+                                </table>
+                            </div>
+                            <div class="p-3 border-top">
+                                <nav class="d-flex justify-content-end">
+                                    <ul id="inventario-pagination" class="pagination pagination-sm mb-0"></ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade p-4" id="servicios">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-3">Detalle de Servicios</h6>
+                            <div class="row g-3">
+                                <% if (contrato.implementacion) { %>
+                                    <div class="col-md-6">
+                                        <div class="service-item">
+                                            <div class="service-icon"><i class="bi bi-box-seam"></i></div>
+                                            <div><div class="fw-bold text-dark">Implementación de Equipos</div><small class="text-muted">Servicio Base</small></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <% if (contrato.mantenimiento) { %>
+                                    <div class="col-md-6">
+                                        <div class="service-item">
+                                            <div class="service-icon"><i class="bi bi-tools"></i></div>
+                                            <div><div class="fw-bold text-dark">Mantenimiento Preventivo/Correctivo</div><small class="text-muted">Servicio Base</small></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <% if (contrato.devolucion_de_equipos) { %>
+                                    <div class="col-md-6">
+                                        <div class="service-item">
+                                            <div class="service-icon"><i class="bi bi-arrow-return-left"></i></div>
+                                            <div><div class="fw-bold text-dark">Gestión de Devolución</div><small class="text-muted">Servicio Base</small></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <% if (contrato.preparacion_de_imagen) { %>
+                                    <div class="col-md-6">
+                                        <div class="service-item">
+                                            <div class="service-icon"><i class="bi bi-window"></i></div>
+                                            <div><div class="fw-bold text-dark">Preparación de Imagen</div><small class="text-muted">Servicio Base</small></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+
+                                <% if (servicios && servicios.length > 0) { %>
+                                    <% servicios.forEach(s => { %>
+                                        <div class="col-md-6">
+                                            <div class="service-item">
+                                                <div class="service-icon" style="background-color: #eff6ff; color: #2563eb;"><i class="bi bi-plus-circle"></i></div>
+                                                <div><div class="fw-bold text-dark"><%= s.nombre_servicio %></div><small class="text-muted">Adicional</small></div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                <% } %>
+                                
+                                <% if (!contrato.implementacion && !contrato.mantenimiento && !contrato.devolucion_de_equipos && !contrato.preparacion_de_imagen && (!servicios || servicios.length === 0)) { %>
+                                    <div class="col-12">
+                                        <div class="alert alert-light border text-center py-4">
+                                            <p class="mb-0 text-muted small">No hay servicios asociados a este contrato.</p>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="documentos">
+                            <div class="scrollable-area">
+                                <div id="documentos-container" class="doc-grid">
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                
+                <div class="content-card mb-3 h-auto">
+                    <div class="card-header-custom py-2">Vigencia</div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between mb-2 align-items-end">
+                            <div class="text-start">
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Inicio</small>
+                                <strong class="text-success"><%= new Date(contrato.fecha_inicio).toLocaleDateString('es-PE', {timeZone: 'UTC'}) %></strong>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Fin</small>
+                                <strong class="text-danger"><%= contrato.fecha_fin ? new Date(contrato.fecha_fin).toLocaleDateString('es-PE', {timeZone: 'UTC'}) : 'Indefinido' %></strong>
+                            </div>
+                        </div>
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card h-auto">
+                    <div class="card-header-custom py-2">Distribución de Equipos</div>
+                    <div class="p-3">
+                        <div class="chart-container" style="height: 200px; position: relative;">
+                            <canvas id="chart-categorias"></canvas>
+                        </div>
+                        <div class="text-center mt-3 border-top pt-2">
+                            <span class="fs-4 fw-bold text-dark d-block lh-1"><%= equipos.length %></span>
+                            <span class="text-muted small" style="font-size: 0.75rem;">TOTAL UNIDADES</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        const equiposData = <%- JSON.stringify(equipos || []) %>;
+        const documentosData = <%- JSON.stringify(documentos || []) %>;
+    </script>
+
+    <script src="/js/admincontractdetail.js"></script>
+</body>
+</html>

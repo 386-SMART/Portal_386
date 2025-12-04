@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Reporte Excel</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <form id="form-generate-excel">
+                    <div class="card-header">
+                        <h4 class="mb-0">Datos para el Reporte Consolidado</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="fw-bold">1. Datos del Remitente (Origen)</h5>
+                        <select id="remitente-select" class="form-select mb-3">
+                            <option value="surquillo">386 S.A.C - Surquillo</option>
+                            <option value="tacna">386 S.A.C - Tacna</option>
+                        </select>
+
+                        <h5 class="fw-bold mt-4">2. Datos del Destinatario (Logística)</h5>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" name="destinatarioNombre" class="form-control" value="Dhl Supply Chain de Lima S.A.C"></div>
+                            <div class="col-md-6"><label class="form-label">RUC</label><input type="text" name="destinatarioRUC" class="form-control" value="20606158751"></div>
+                            <div class="col-12"><label class="form-label">Dirección</label><textarea name="destinatarioDireccion" class="form-control">AV. AVENIDA MAGISTERIO LOTE. 19 INT. 82 OTR. AGROPECUARIO DE VILLA RICA (CRUCE DE AV. MAGISTERIO CON AV. JUAN VEL) LIMA - LIMA - VILLA EL SALVADOR</textarea></div>
+                        </div>
+                        
+                        <h5 class="fw-bold mt-4">3. Información General del Envío</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="form-label">Fecha de Solicitud</label><input type="date" name="fechaSolicitud" class="form-control" required></div>
+                            <div class="col-md-4"><label class="form-label">Estado de Piezas</label><select name="estadoPiezas" class="form-select"><option>DEFECTIVE</option><option>UNUSED</option></select></div>
+                            <div class="col-md-4"><label class="form-label">Dimensiones</label><input type="text" name="dimensiones" class="form-control" value="43x33 cm"></div>
+                            <div class="col-md-4"><label class="form-label">Kilos Aprox. (kg)</label><input type="number" name="kilos" class="form-control" value="3"></div>
+                            <div class="col-md-4"><label class="form-label">Bulto</label><input type="number" name="bulto" class="form-control" value="1"></div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-file-earmark-excel-fill me-2"></i>Generar y Descargar Excel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title fw-bold">4. Añadir Tickets al Reporte</h4>
+                    <div class="input-group mb-3">
+                        <input type="text" id="search-ticket-input" class="form-control" placeholder="Buscar por Caso, N/S o HP Order...">
+                        <button class="btn btn-outline-primary" id="search-ticket-btn">Buscar</button>
+                    </div>
+                    <div id="search-results" class="list-group mb-3" style="max-height: 200px; overflow-y: auto;"></div>
+                    
+                    <h5 class="fw-bold mt-3">Tickets Seleccionados (<span id="batch-count">0</span>)</h5>
+                    <ul id="ticket-batch-list" class="list-group">
+                        <li class="list-group-item text-muted">Añade tickets desde la búsqueda.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/generar-reporte.js"></script>
+</body>
+</html>

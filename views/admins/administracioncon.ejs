@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Contratos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/img/favicon-16x16.ico" type="image/x-icon" />
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    
+    <meta name="csrf-token" content="<%= csrfToken %>">
+
+    <style>
+      :root {
+        --font-main: 'Inter', sans-serif;
+        --bg-body: #f3f5f9;
+        --primary: #0d6efd;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background-color: var(--bg-body);
+        color: var(--text-dark);
+      }
+
+      /* --- Estilos Generales --- */
+      .content-card {
+        background-color: white;
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+      }
+
+      .main-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        padding: 2rem;
+      }
+
+      /* --- Tabs --- */
+      .nav-tabs-main {
+        border-bottom: 1px solid var(--border-color);
+        padding: 0 1.5rem;
+      }
+      .nav-tabs-main .nav-link {
+        border: none;
+        color: var(--text-muted);
+        font-weight: 500;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid transparent;
+      }
+      .nav-tabs-main .nav-link.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: transparent;
+        font-weight: 600;
+      }
+
+      /* --- Wizard --- */
+      .wizard-container { position: relative; margin-bottom: 2.5rem; padding: 0 1rem; }
+      .progress-line-bg {
+        position: absolute; top: 18px; left: 40px; right: 40px; height: 4px; background: #e2e8f0; z-index: 1;
+      }
+      .progress-line-active {
+        position: absolute; top: 18px; left: 40px; height: 4px; background: var(--primary); z-index: 2; width: 0%; transition: width 0.4s ease;
+      }
+      .steps-wrapper { position: relative; z-index: 3; display: flex; justify-content: space-between; }
+      .step-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 80px; }
+      .step-circle {
+        width: 40px; height: 40px; border-radius: 50%; background: white; border: 2px solid #cbd5e1;
+        display: flex; align-items: center; justify-content: center; font-weight: 600; color: #64748b; transition: all 0.3s;
+      }
+      .step-item.active .step-circle {
+        border-color: var(--primary); background: var(--primary); color: white; box-shadow: 0 0 0 4px #e7f1ff;
+      }
+      .step-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+      .step-item.active .step-label { color: var(--text-dark); font-weight: 600; }
+
+      /* --- Table & Pagination --- */
+      .table-custom th {
+        background-color: #f8fafc; font-size: 0.75rem; text-transform: uppercase;
+        color: var(--text-muted); font-weight: 700; padding: 1rem; border-bottom: 1px solid var(--border-color);
+      }
+      .table-custom td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 0.9rem; }
+      
+      .pagination .page-link {
+        border: none; color: var(--text-muted); margin: 0 2px; border-radius: 6px; font-weight: 500;
+      }
+      .pagination .page-link:hover { background: #f1f5f9; color: var(--primary); }
+      .pagination .page-item.active .page-link {
+        background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+      }
+      .pagination .page-item.disabled .page-link { color: #cbd5e1; background: transparent; }
+
+      /* --- Sidebar --- */
+      .info-card {
+        background: white; border-radius: 1rem; padding: 1.5rem; border: 1px solid var(--border-color); position: sticky; top: 2rem;
+      }
+      .info-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+      .info-icon-wrapper {
+        width: 36px; height: 36px; border-radius: 8px; background: #e7f1ff; color: var(--primary);
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main-container">
+      <main>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="h3 mb-1 text-dark fw-bold">Gestión de Contratos</h1>
+            <p class="text-muted mb-0">Crea, edita y administra los acuerdos comerciales.</p>
+          </div>
+          <a href="/admin/visualizarcontratos" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+            <i class="bi bi-arrow-left"></i> Volver a Lista
+          </a>
+        </div>
+
+        <div class="content-card">
+          <ul class="nav nav-tabs nav-tabs-main" id="gestionTabs" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form-pane" type="button">
+                <i class="bi bi-pencil-square me-2"></i>Formulario
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button">
+                <i class="bi bi-list-ul me-2"></i>Lista Rápida
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="import-tab" data-bs-toggle="tab" data-bs-target="#import-pane" type="button">
+                <i class="bi bi-file-earmark-arrow-up me-2"></i>Importar
+              </button>
+            </li>
+          </ul>
+
+          <div class="card-body p-4">
+            <div class="tab-content" id="gestionTabsContent">
+              
+              <div class="tab-pane fade show active" id="form-pane">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 id="form-title" class="fw-bold text-dark m-0">Crear Nuevo Contrato</h5>
+                    <button type="button" id="btn-cancel-edit" class="btn btn-light btn-sm text-danger border d-none">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar Edición
+                    </button>
+                </div>
+
+                <div class="wizard-container">
+                  <div class="progress-line-bg"></div>
+                  <div class="progress-line-active" id="progress-line"></div>
+                  <div class="steps-wrapper">
+                    <div class="step-item active" id="step-1"><div class="step-circle">1</div><span class="step-label">Datos</span></div>
+                    <div class="step-item" id="step-2"><div class="step-circle">2</div><span class="step-label">Alcance</span></div>
+                    <div class="step-item" id="step-3"><div class="step-circle">3</div><span class="step-label">Archivos</span></div>
+                  </div>
+                </div>
+
+                <div id="form-alert" class="alert d-none mb-4 shadow-sm border-0" role="alert"></div>
+
+                <form id="contract-form" novalidate enctype="multipart/form-data">
+                  <div class="form-step active" data-step="1">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Empresa Cliente <span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_empresa" name="id_empresa" required></select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Nombre del Contrato <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nombre_contrato" name="nombre_contrato" placeholder="Ej: Contrato Marco 2025" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="categoria" name="categoria" required>
+                                <option value="Venta">Venta</option>
+                                <option value="Leasing">Leasing</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label">Moneda</label>
+                             <select class="form-select" id="moneda" name="moneda" required>
+                                <option value="PEN">Soles (PEN)</option>
+                                <option value="USD">Dólares (USD)</option>
+                                <option value="EUR">Euros (EUR)</option>
+                             </select>
+                        </div>
+                        <div class="col-md-12 d-none" id="relacion-container">
+                             <label class="form-label text-primary">Contrato Relacionado</label>
+                             <select id="id_relacion" name="id_relacion"></select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Fin</label>
+                            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+                        </div>
+                    </div>
+                  </div>
+
+                  <div class="form-step" data-step="2" style="display: none">
+                    <h6 class="fw-bold mb-3">Servicios Incluidos</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6"><div class="form-check p-3 border rounded bg-light"><input class="form-check-input" type="checkbox" id="implementacion" name="implementacion"><label class="form-check-label fw-medium ps-2" for="implementacion">Implementación</label></div></div>
+                        <div class="col-md-6"><div class="form-check p-3 border rounded bg-light"><input class="form-check-input" type="checkbox" id="mantenimiento" name="mantenimiento"><label class="form-check-label fw-medium ps-2" for="mantenimiento">Mantenimiento</label></div></div>
+                        <div class="col-md-6"><div class="form-check p-3 border rounded bg-light"><input class="form-check-input" type="checkbox" id="devolucion_de_equipos" name="devolucion_de_equipos"><label class="form-check-label fw-medium ps-2" for="devolucion_de_equipos">Devolución</label></div></div>
+                        <div class="col-md-6"><div class="form-check p-3 border rounded bg-light"><input class="form-check-input" type="checkbox" id="preparacion_de_imagen" name="preparacion_de_imagen"><label class="form-check-label fw-medium ps-2" for="preparacion_de_imagen">Prep. de Imagen</label></div></div>
+                    </div>
+                  </div>
+
+                  <div class="form-step" data-step="3" style="display: none">
+                    <div class="mb-3">
+                        <label class="form-label">Contratos Firmados</label>
+                        <input class="form-control" type="file" id="contratos_pdf" name="contratos_pdf" multiple accept=".pdf">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Guías de Remisión</label>
+                        <input class="form-control" type="file" id="guias_pdf" name="guias_pdf" multiple accept=".pdf">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Propuestas</label>
+                        <input class="form-control" type="file" id="propuestas_pdf" name="propuestas_pdf" multiple accept=".pdf">
+                    </div>
+                    
+                  <div id="existing-docs-section" class="d-none mt-5 pt-3 border-top">
+    <h6 class="fw-bold mb-3 text-dark">Documentos Cargados</h6>
+    
+    <ul class="nav nav-pills nav-fill mb-3 small" id="editDocTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="edit-tab-contratos-btn" data-bs-toggle="pill" data-bs-target="#edit-tab-contratos" type="button">
+                Contratos <span id="badge-edit-contratos" class="badge bg-white text-primary ms-1 shadow-sm">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="edit-tab-guias-btn" data-bs-toggle="pill" data-bs-target="#edit-tab-guias" type="button">
+                Guías <span id="badge-edit-guias" class="badge bg-white text-primary ms-1 shadow-sm">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="edit-tab-propuestas-btn" data-bs-toggle="pill" data-bs-target="#edit-tab-propuestas" type="button">
+                Propuestas <span id="badge-edit-propuestas" class="badge bg-white text-primary ms-1 shadow-sm">0</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content border rounded-3 p-3 bg-white shadow-sm" id="editDocTabsContent" style="min-height: 150px;">
+        <div class="tab-pane fade show active" id="edit-tab-contratos" role="tabpanel">
+            <div id="list-edit-contratos" class="d-flex flex-column gap-2"></div>
+        </div>
+        <div class="tab-pane fade" id="edit-tab-guias" role="tabpanel">
+            <div id="list-edit-guias" class="d-flex flex-column gap-2"></div>
+        </div>
+        <div class="tab-pane fade" id="edit-tab-propuestas" role="tabpanel">
+            <div id="list-edit-propuestas" class="d-flex flex-column gap-2"></div>
+        </div>
+    </div>
+</div>
+                  </div>
+
+                  <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <button type="button" class="btn btn-light text-muted border px-4" id="btn-prev" style="display: none">
+                        <i class="bi bi-chevron-left me-1"></i> Anterior
+                    </button>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-primary px-4" id="btn-next">
+                            Siguiente <i class="bi bi-chevron-right ms-1"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success px-4 text-white" id="form-submit-btn" style="display: none">
+                            <i class="bi bi-check-lg me-2"></i> Guardar
+                        </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="tab-pane fade" id="list-pane">
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                         <div class="input-group">
+                             <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                             <input type="search" id="contract-search-input" class="form-control border-start-0 ps-0" placeholder="Buscar por nombre...">
+                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="filter-company-list" class="form-select" placeholder="Filtrar por Empresa..."></select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Contrato / Empresa</th>
+                                <th>Inicio</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contracts-table-body"></tbody>
+                    </table>
+                </div>
+                
+                <nav class="d-flex justify-content-end mt-3">
+                    <ul id="contracts-pagination" class="pagination pagination-sm mb-0"></ul>
+                </nav>
+              </div>
+
+              <div class="tab-pane fade" id="import-pane">
+                 <div class="text-center py-5">
+                     <i class="bi bi-cloud-arrow-up display-4 text-primary opacity-50"></i>
+                     <h4 class="mt-3 fw-bold">Carga Masiva de Contratos</h4>
+                     <p class="text-muted">Usa nuestra plantilla para importar múltiples registros.</p>
+                 </div>
+                 
+                 <div class="row justify-content-center">
+                     <div class="col-md-8">
+                         <div class="card border bg-light mb-4 p-3 text-center">
+                             <p class="mb-2 fw-medium">1. Obtén el formato correcto</p>
+                             <button class="btn btn-outline-primary btn-sm w-50 mx-auto" id="btn-download-template">
+                                 <i class="bi bi-download me-1"></i> Descargar Plantilla.xlsx
+                             </button>
+                         </div>
+
+                         <div class="mb-4">
+                            <label class="form-label fw-bold mb-1">2. Buscar ID de Empresa (Referencia)</label>
+                            <select id="company-guide-select" class="form-control"></select>
+                            <div class="form-text">Usa esto para llenar la columna `id_empresa` en el Excel.</div>
+                         </div>
+                         
+                         <label class="form-label fw-bold">3. Subir Archivo</label>
+                         <input class="form-control mb-3" type="file" id="excel-file-input" accept=".xlsx">
+                         
+                         <div id="preview-section" class="d-none mt-4">
+                             <h6 class="fw-bold text-success"><i class="bi bi-check-circle me-2"></i>Datos Leídos</h6>
+                             <div class="table-responsive border rounded bg-white mb-3" style="max-height: 300px;">
+                                 <table class="table table-sm table-bordered mb-0 small">
+                                     <thead id="preview-thead" class="table-light sticky-top"></thead>
+                                     <tbody id="preview-tbody"></tbody>
+                                 </table>
+                             </div>
+                             <button class="btn btn-success w-100 py-2" id="btn-save-bulk">
+                                 Confirmar Importación (<span id="preview-count-badge">0</span>)
+                             </button>
+                         </div>
+                     </div>
+                 </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="info-panel">
+        <div id="info-panel-default">
+          <div class="info-card">
+            <h6 class="fw-bold mb-4 text-dark">Guía Rápida</h6>
+            <div class="info-item">
+                <div class="info-icon-wrapper"><i class="bi bi-1-circle"></i></div>
+                <div><strong class="d-block text-dark mb-1">Datos</strong><span class="text-muted small">Selecciona la empresa y define las fechas clave.</span></div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon-wrapper"><i class="bi bi-2-circle"></i></div>
+                <div><strong class="d-block text-dark mb-1">Alcance</strong><span class="text-muted small">Activa los servicios que incluye el contrato.</span></div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon-wrapper"><i class="bi bi-3-circle"></i></div>
+                <div><strong class="d-block text-dark mb-1">Adjuntos</strong><span class="text-muted small">Sube los PDFs firmados para respaldo.</span></div>
+            </div>
+          </div>
+        </div>
+        <div id="info-panel-edit" class="d-none">
+            <div class="info-card border-warning">
+                <h6 class="fw-bold mb-3 text-warning"><i class="bi bi-pencil-fill me-2"></i>Modo Edición</h6>
+                <p class="small text-muted mb-0">Estás modificando un contrato. La empresa no se puede cambiar.</p>
+            </div>
+        </div>
+      </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="/js/administracioncon.js"></script>
+  </body>
+</html>
